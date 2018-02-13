@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerQueryApp", "PowerQueryApp\PowerQueryApp.csproj", "{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D312150-65E1-4259-95BD-7DE958E02FBB}
+	EndGlobalSection
+EndGlobal
