@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define Platform = "x86" ?>
+  <?if $(var.Platform) = x64 ?>
+  <?define Win64 = "yes" ?>
+  <?else ?>
+  <?define Win64 = "no" ?>
+  <?endif ?>
+</Include>
