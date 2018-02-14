@@ -12,7 +12,7 @@
     <Feature Id="FilesToInstall" Level="1">
       <ComponentGroupRef Id="cgDIR01"/>
       <ComponentGroupRef Id="cgEventSource"/>
-      <ComponentGroupRef Id="cgGAC"/>
+      <!--<ComponentGroupRef Id="cgGAC"/>-->
       <ComponentGroupRef Id="cgLib"/>
     </Feature>
     <Property Id="WIXUI_INSTALLDIR" Value="DIR01" />    
@@ -41,12 +41,12 @@
       </Component>  
     </ComponentGroup>
 
-    <ComponentGroup Id="cgGAC" Directory="GAC">
+    <!--<ComponentGroup Id="cgGAC" Directory="GAC">
       <Component Id="f00" Guid="d28422f9-6a41-4619-a526-9897d5415c70">
-        <!-- Registering assembly in GAC -->
+        --><!-- Registering assembly in GAC --><!--
         <File Id="f00.01" Name="PowerQueryNet.Client.dll" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="yes" Assembly=".net"/>
       </Component>
-    </ComponentGroup>    
+    </ComponentGroup>-->    
     
     <ComponentGroup Id="cgDIR01" Directory="DIR01">      
       <Component Id="RegistryEntries" Guid="7300b49c-3d2d-42ce-8af8-d20afa321deb">
@@ -56,7 +56,7 @@
           <RegistryValue Name="IpcTimeout" Type="string" Value="00:30:00"/>
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Value="[DIR01]\lib\"/>
+          <RegistryValue Type="string" Value="[DIR01]lib\"/>
         </RegistryKey>
       </Component>      
       <Component Id="f01" Guid="5f6e927b-fb27-4cd3-9b65-97d8dd9bd793">

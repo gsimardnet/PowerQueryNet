@@ -66,7 +66,7 @@ namespace PowerQueryNet.Client
                 using (var keyBP = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
                 {
                     if (keyBP == null)
-                        throw new Exception("PowerQueryNet registry key was not found.");
+                        throw new Exception("PowerQueryNet was not found. Please install the application first.");
 
                     ipcTimeout = TimeSpan.Parse(keyBP.GetValue("IpcTimeout").ToString());
                     ipcAddress = keyBP.GetValue("IpcAddress").ToString();
