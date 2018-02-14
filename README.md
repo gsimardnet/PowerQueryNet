@@ -21,6 +21,11 @@ var pq = new PowerQueryCommand();
 var result = pq.Execute(q);
 DataTable dt = result.DataTable;
 ```
+## Build requirements
+
+* Visual Studio 2015+
+
+To build the Setup project, [WiX Toolset](http://wixtoolset.org/releases/) must be installed.
 
 ## Copyright
 
