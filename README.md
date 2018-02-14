@@ -6,9 +6,9 @@ PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (
 
 ## Download
 
-Installer : [PowerQueryNet.msi](https://github.com/gsimardnet/PowerQueryNet/blob/master/Download/PowerQueryNet.msi)
+Installer : [PowerQueryNet.msi](Download/PowerQueryNet.msi)
 
-Samples : [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/blob/master/Download/PowerQueryNet.Samples.zip)
+Samples : [PowerQueryNet.Samples.zip](Download/PowerQueryNet.Samples.zip)
 
 ## Hello, World!
 
@@ -31,4 +31,4 @@ To build the Setup project, [WiX Toolset](http://wixtoolset.org/releases/) must 
 
 Copyright 2018
 
-Licensed under the [MIT License](LICENSE.md)
+Licensed under the [MIT License](LICENSE)
