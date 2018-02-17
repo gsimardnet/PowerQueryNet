@@ -67,11 +67,12 @@ namespace PowerQueryNet.Service
 
                         executeResponse = powerQueryService.Execute(powerQueryFile, queries, credentials);
 
-                        OutputResponse(executeResponse); 
-                    }
+                        OutputResponse(executeResponse);
 
-                    //string connectionString = @"Data Source=P16019\SQL2016; Integrated Security=true; Initial Catalog=TEST";
-                    //string response = powerQueryService.ExecuteToSQL(connectionString, query1and2.Name, queries, credentials);
+
+                        string connectionString = @"Data Source=P16019\SQL2016; Integrated Security=true; Initial Catalog=TEST";
+                        string response = powerQueryService.ExecuteToSQL(connectionString, powerQueryFile, queries, credentials);
+                    }
 
                     if (fileExtension == ".xlsx" 
                      || fileExtension == ".xlsm"

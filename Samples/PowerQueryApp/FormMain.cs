@@ -37,7 +37,8 @@ namespace PowerQueryApp
                 Queries = Queries.LoadFromFolder(myQueriesPath), //Load every .pq file found in MyQueries folder
             };
 
-            var result = pq.Execute("#Hello World");
+            //var result = pq.Execute("#Hello World");
+            var result = pq.Execute("DateTable2018");
 
             DisplayResult(result);
         }

@@ -162,8 +162,32 @@ namespace PowerQueryNet.Service
 
                 command.Dispose();
 
-                executeResponse.DataTable = dataTable;
-                executeResponse.Xml = dataTable.ToXML();
+                //executeResponse.DataTable = dataTable;
+                //executeResponse.Xml = dataTable.ToXML();
+
+                var xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(DataTable));
+                var sw = new StringWriter();
+                xmlSerializer.Serialize(sw, dataTable);
+
+                executeResponse.DataTableXML = sw.ToString();
+                //executeResponse.DataTableXML = dataTable.ToXML();
+
+                var stringWriter = new StringWriter();
+                dataTable.WriteXml(stringWriter);
+                executeResponse.Xml = stringWriter.ToString();
+
+                //DataTable dt = executeResponse.Xml.DeserializeXML<DataTable>();
+
+                
+
+                //var stringWriter = new StringWriter();
+                //dataTable.WriteXml(stringWriter);
+                //string xml = stringWriter.ToString();
+
+                //var dt = new DataTable();
+                //StringReader sr = new StringReader(executeResponse.Xml);
+                ////StringReader sr = new StringReader(xml);
+                //dt.ReadXml(sr);
 
             }
             catch (Exception ex)

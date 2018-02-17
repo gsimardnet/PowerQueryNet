@@ -78,6 +78,12 @@
     <None Include="MyQueries\#Hello World.pq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="MyQueries\DateTable2018.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MyQueries\fnDateTable.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="MyQueries\List1.pq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

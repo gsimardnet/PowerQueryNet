@@ -25,13 +25,20 @@ namespace PowerQueryNet.Client
                 type = value.GetType();
             }
 
-            if (type == typeof(DataTable))
-            {
-                DataTable dataTable = (DataTable)Convert.ChangeType(value, type);
-                var stringWriter = new StringWriter();
-                dataTable.WriteXml(stringWriter);
-                return stringWriter.ToString();
-            }
+            //if (type == typeof(DataTable))
+            //{
+            //    //Simplified
+            //    //DataTable dataTable = (DataTable)Convert.ChangeType(value, type);
+            //    //var stringWriter = new StringWriter();
+            //    //dataTable.WriteXml(stringWriter);
+            //    //return stringWriter.ToString();
+
+            //    //Complex
+            //    var xmlSerializer = new XmlSerializer(typeof(DataTable));
+            //    var sw = new StringWriter();
+            //    xmlSerializer.Serialize(sw, value);
+            //    return sw.ToString();
+            //}
 
             if (type == typeof(DataRow))
             {
