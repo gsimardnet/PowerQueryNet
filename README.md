@@ -8,7 +8,7 @@ PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (
 
 Installer : [PowerQueryNet.msi](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.0/PowerQueryNet.msi)
 
-Samples : [PowerQueryNet.Samples.zip](Download/PowerQueryNet.Samples.zip)
+Samples : [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.0/PowerQueryNet.Samples.zip)
 
 ## Hello, World!
 
