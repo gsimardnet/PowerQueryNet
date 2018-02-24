@@ -30,7 +30,7 @@ namespace PowerQueryNet.Client
         }
 
         public ExecuteResponse Execute(Query query)
-        {            
+        {
             if (Queries[query.Name] == null)
                 Queries.Add(query);
 
@@ -49,88 +49,43 @@ namespace PowerQueryNet.Client
 
         public static string MashupFromFile(string fileName)
         {
-            return ExecuteMethod("MashupFromFile", fileName);            
+            return ExecuteMethod("MashupFromFile", fileName);
         }
 
         private static dynamic ExecuteMethod(string method, params object[] obj)
         {
-            Process process = null;
-            string response = null;
             IPowerQueryService powerQueryService = null;
 
-            try
+            TimeSpan ipcTimeout;
+            string ipcAddress;
+            //using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
+            using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\PowerQueryNet"))
             {
-                TimeSpan ipcTimeout;
-                string ipcAddress;
-                string exePath;
-                using (var keyBP = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
-                {
-                    if (keyBP == null)
-                        throw new Exception("PowerQueryNet was not found. Please install the application first.");
+                if (keyPQ == null)
+                    throw new Exception("PowerQueryNet was not found. Please install the application first.");
 
-                    ipcTimeout = TimeSpan.Parse(keyBP.GetValue("IpcTimeout").ToString());
-                    ipcAddress = keyBP.GetValue("IpcAddress").ToString();
-                    exePath = keyBP.GetValue("ExePath").ToString();
-                }
-                process = new Process();
-                process.StartInfo.FileName = exePath;
-                process.StartInfo.Arguments = "-ipc";
-                process.Start();
-
-                NetNamedPipeBinding binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
-                EndpointAddress endpointAddress = new EndpointAddress(ipcAddress + process.Id);
-
-                int runTry = 1;
-                while (response == null && runTry <= 3)
-                {
-                    Thread.Sleep(500); //wait for named pipe channel to initialize
-                    try
-                    {
-                        binding.SendTimeout = ipcTimeout;
-                        binding.ReceiveTimeout = ipcTimeout;
-                        binding.OpenTimeout = ipcTimeout;
-                        binding.CloseTimeout = ipcTimeout;
-                        binding.MaxReceivedMessageSize = 2147483647;
-                        powerQueryService = ChannelFactory<IPowerQueryService>.CreateChannel(binding, endpointAddress);
-
-                        if (method == "Execute")
-                            if (obj[1] is Queries)
-                                return powerQueryService.Execute((string)obj[0], (Queries)obj[1], (Credentials)obj[2]);
-
-                        if (method == "ExecuteToSQL")
-                            return powerQueryService.ExecuteToSQL((string)obj[0], (string)obj[1], (Queries)obj[2], (Credentials)obj[3]);
-
-                        if (method == "MashupFromFile")
-                            return powerQueryService.MashupFromFile((string)obj[0]);
-                    }
-                    catch (EndpointNotFoundException)
-                    {
-                    }
-                    runTry++;
-                }
+                ipcTimeout = TimeSpan.Parse(keyPQ.GetValue("IpcTimeout").ToString());
+                ipcAddress = keyPQ.GetValue("IpcAddress").ToString();
             }
-            finally
-            {
-                bool stopped = false;
-                if (powerQueryService != null)
-                {
-                    try
-                    {
-                        powerQueryService.Stop();
-                    }
-                    catch (CommunicationException)
-                    {
-                        stopped = true;
-                    }
-                }
 
-                if (!stopped && process != null)
-                    {
-                    process.Kill();
-                    process.Dispose();
-                }
-            }
-            return response;
+            NetNamedPipeBinding binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
+            EndpointAddress endpointAddress = new EndpointAddress(ipcAddress);
+
+            binding.SendTimeout = ipcTimeout;
+            binding.ReceiveTimeout = ipcTimeout;
+            binding.OpenTimeout = ipcTimeout;
+            binding.CloseTimeout = ipcTimeout;
+            binding.MaxReceivedMessageSize = 2147483647;
+            powerQueryService = ChannelFactory<IPowerQueryService>.CreateChannel(binding, endpointAddress);
+
+            if (method == "Execute" && obj[1] is Queries)
+                return powerQueryService.Execute((string)obj[0], (Queries)obj[1], (Credentials)obj[2]);
+            else if (method == "ExecuteToSQL")
+                return powerQueryService.ExecuteToSQL((string)obj[0], (string)obj[1], (Queries)obj[2], (Credentials)obj[3]);
+            else if (method == "MashupFromFile")
+                return powerQueryService.MashupFromFile((string)obj[0]);
+            else
+                throw new NotImplementedException(string.Format("Method '{0}' is not implemented.", method));
         }
     }
 }

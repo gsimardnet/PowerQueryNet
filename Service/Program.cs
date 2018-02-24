@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,11 @@ namespace PowerQueryNet.Service
                 Source = "PowerQueryNet"
             };
 
-            if (args.FirstOrDefault(x => x == "-ipc") != null)
+            if (args == null || args.Length == 0)
+            {
+                ServiceBase.Run(new WindowsService());
+            }
+            else if (args.FirstOrDefault(x => x == "-ipc") != null)
             {
                 try
                 {

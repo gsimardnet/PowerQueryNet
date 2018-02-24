@@ -53,8 +53,10 @@ namespace PowerQueryApp
             {
                 MessageBox.Show(result.ExceptionMessage, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            dgvResult.DataSource = result.DataTable;
+            else
+            {
+                dgvResult.DataSource = result.DataTable;
+            }
         }
 
         private void BtnList1and2_Click(object sender, EventArgs e)

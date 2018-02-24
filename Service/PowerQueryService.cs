@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using PowerQueryNet.Engine;
 using PowerQueryNet.Client;
-using PowerQueryNet.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -162,33 +161,15 @@ namespace PowerQueryNet.Service
 
                 command.Dispose();
 
-                //executeResponse.DataTable = dataTable;
-                //executeResponse.Xml = dataTable.ToXML();
-
                 var xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(DataTable));
                 var sw = new StringWriter();
                 xmlSerializer.Serialize(sw, dataTable);
 
                 executeResponse.DataTableXML = sw.ToString();
-                //executeResponse.DataTableXML = dataTable.ToXML();
 
                 var stringWriter = new StringWriter();
                 dataTable.WriteXml(stringWriter);
                 executeResponse.Xml = stringWriter.ToString();
-
-                //DataTable dt = executeResponse.Xml.DeserializeXML<DataTable>();
-
-                
-
-                //var stringWriter = new StringWriter();
-                //dataTable.WriteXml(stringWriter);
-                //string xml = stringWriter.ToString();
-
-                //var dt = new DataTable();
-                //StringReader sr = new StringReader(executeResponse.Xml);
-                ////StringReader sr = new StringReader(xml);
-                //dt.ReadXml(sr);
-
             }
             catch (Exception ex)
             {
@@ -208,12 +189,12 @@ namespace PowerQueryNet.Service
         {
             TimeSpan ipcTimeout;
             string ipcAddress;
-            using (var keyBP = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
+            //using (var keyBP = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
+            using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\PowerQueryNet"))
             {
-                ipcTimeout = TimeSpan.Parse(keyBP.GetValue("IpcTimeout").ToString());
-                ipcAddress = keyBP.GetValue("IpcAddress").ToString();
+                ipcTimeout = TimeSpan.Parse(keyPQ.GetValue("IpcTimeout").ToString());
+                ipcAddress = keyPQ.GetValue("IpcAddress").ToString();
             }
-            string address = ipcAddress + Process.GetCurrentProcess().Id;
 
             ServiceHost serviceHost = new ServiceHost(typeof(PowerQueryService));
             NetNamedPipeBinding binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
@@ -221,13 +202,8 @@ namespace PowerQueryNet.Service
             binding.ReceiveTimeout = ipcTimeout;
             binding.OpenTimeout = ipcTimeout;
             binding.CloseTimeout = ipcTimeout;
-            serviceHost.AddServiceEndpoint(typeof(IPowerQueryService), binding, address);
-            serviceHost.Open();            
-        }
-
-        public void Stop()
-        {
-            Environment.Exit(0);
+            serviceHost.AddServiceEndpoint(typeof(IPowerQueryService), binding, ipcAddress);
+            serviceHost.Open();
         }
     }
 }

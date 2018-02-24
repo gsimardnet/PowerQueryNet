@@ -20,7 +20,7 @@ namespace PowerQueryNet.Client
         [OperationContract]
         string MashupFromFile(string fileName);
 
-        [OperationContract]
-        void Stop();
+        //[OperationContract]
+        //void Stop();
     }
 }

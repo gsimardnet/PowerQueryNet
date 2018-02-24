@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
   <?include $(sys.CURRENTDIR)\Config.wxi?>  
-  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.0" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
-    <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="100" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
+  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.1" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
+    <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="100" Platform ="$(var.Platform)" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
     <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
@@ -12,7 +12,7 @@
     <Feature Id="FilesToInstall" Level="1">
       <ComponentGroupRef Id="cgDIR01"/>
       <ComponentGroupRef Id="cgEventSource"/>
-      <!--<ComponentGroupRef Id="cgGAC"/>-->
+      <ComponentGroupRef Id="cgGAC"/>
       <ComponentGroupRef Id="cgLib"/>
     </Feature>
     <Property Id="WIXUI_INSTALLDIR" Value="DIR01" />    
@@ -24,7 +24,7 @@
   </Product>      
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">        
+      <Directory Id="ProgramFiles64Folder">        
         <Directory Id="DIR01" Name="PowerQueryNet">
           <Directory Id="lib" Name="lib">
           </Directory>
@@ -32,24 +32,36 @@
           </Directory>
         </Directory>
       </Directory>
+      <Directory Id="ProgramFilesFolder">
+      </Directory>
     </Directory>
   </Fragment>
   <Fragment>
     <ComponentGroup Id="cgEventSource" Directory="TARGETDIR">
       <Component Id="EventSource" Guid="0c8fe714-3c04-455f-97f4-e9a1b06bea18" >
         <util:EventSource Log="PowerQueryNet" Name="PowerQueryNet" EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll"/>
-      </Component>  
+      </Component>
+      <Component Id="RegistryEntries32" Guid="f6d04327-f503-427d-9c9b-8899df6699f9" >
+        <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" Action="createAndRemoveOnUninstall">
+          <RegistryValue Name="ExePath" Type="string" Value="[DIR01]PowerQueryNet.Service.exe"/>
+          <RegistryValue Name="IpcAddress" Type="string" Value="net.pipe://localhost/PowerQueryNet/"/>
+          <RegistryValue Name="IpcTimeout" Type="string" Value="00:30:00"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Value="[DIR01]lib\"/>
+        </RegistryKey>
+      </Component>
     </ComponentGroup>
 
-    <!--<ComponentGroup Id="cgGAC" Directory="GAC">
-      <Component Id="f00" Guid="d28422f9-6a41-4619-a526-9897d5415c70">
-        --><!-- Registering assembly in GAC --><!--
+    <ComponentGroup Id="cgGAC" Directory="GAC">
+      <Component Id="f00" Guid="d28422f9-6a41-4619-a526-9897d5415c70" Win64="yes" >
+         <!--Registering assembly in GAC-->
         <File Id="f00.01" Name="PowerQueryNet.Client.dll" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="yes" Assembly=".net"/>
       </Component>
-    </ComponentGroup>-->    
+    </ComponentGroup>
     
     <ComponentGroup Id="cgDIR01" Directory="DIR01">      
-      <Component Id="RegistryEntries" Guid="7300b49c-3d2d-42ce-8af8-d20afa321deb">
+      <Component Id="RegistryEntries64" Guid="7300b49c-3d2d-42ce-8af8-d20afa321deb" Win64="yes" >
         <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" Action="createAndRemoveOnUninstall">
           <RegistryValue Name="ExePath" Type="string" Value="[DIR01]PowerQueryNet.Service.exe"/>
           <RegistryValue Name="IpcAddress" Type="string" Value="net.pipe://localhost/PowerQueryNet/"/>
@@ -59,7 +71,7 @@
           <RegistryValue Type="string" Value="[DIR01]lib\"/>
         </RegistryKey>
       </Component>      
-      <Component Id="f01" Guid="5f6e927b-fb27-4cd3-9b65-97d8dd9bd793">
+      <Component Id="f01" Guid="5f6e927b-fb27-4cd3-9b65-97d8dd9bd793" Win64="yes" >
         <File Id="f01.01" Source="..\..\..\Service\bin\Debug\EnvDTE.dll" KeyPath="no"/>
         <File Id="f01.02" Source="..\..\..\Service\bin\Debug\EnvDTE80.dll" KeyPath="no"/>
         <File Id="f01.03" Source="..\..\..\Service\bin\Debug\KernelTraceControl.dll" KeyPath="no"/>
@@ -111,14 +123,26 @@
         <File Id="f01.49" Source="..\..\..\Service\bin\Debug\VSLangProj.dll" KeyPath="no"/>
         <File Id="f01.50" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="no"/>
         <File Id="f01.51" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Engine.dll" KeyPath="no"/>
-        <File Id="f01.52" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Service.exe" KeyPath="no"/>
+        <File Id="f01.52" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Service.exe" KeyPath="yes"/>
         <File Id="f01.53" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.pdb" KeyPath="no"/>
         <File Id="f01.54" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Engine.pdb" KeyPath="no"/>
         <File Id="f01.55" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Service.pdb" KeyPath="no"/>
+
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Vital="yes" ErrorControl="ignore" Interactive="no"
+              Name="PowerQueryNet.Service"
+              DisplayName="PowerQueryNet Service"
+              Description = "Run Power Query M formula language from .NET applications."
+              Account="LocalSystem"
+              Start="auto"
+              >
+        </ServiceInstall>
+
+        <ServiceControl Id="ServiceController" Start="install" Stop="uninstall" Remove="uninstall" Name="PowerQueryNet.Service" Wait="yes" />
+
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="cgLib" Directory="lib">      
-      <Component Id="f02" Guid="cb86472b-3b9c-42bc-9b8c-1dec2f8d434c">
+      <Component Id="f02" Guid="cb86472b-3b9c-42bc-9b8c-1dec2f8d434c" Win64="yes" >
         <File Id="f02.01" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="no"/>
       </Component>
     </ComponentGroup>
