@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="PowerQueryNet.Client, Version=1.0.1.0, Culture=neutral, PublicKeyToken=65774499621027fd, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
