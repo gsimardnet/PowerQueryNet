@@ -43,44 +43,44 @@ namespace PowerQueryNet.Service
             }
         }
 
-        public string ExecuteToSQL(string connectionString, string queryName, Queries queries, Credentials credentials)
-        {
-            ExecuteResponse executeResponse = Execute(queryName, queries, credentials);
+        //public string ExecuteToSQL(string connectionString, string queryName, Queries queries, Credentials credentials)        
+        //{
+        //    ExecuteResponse executeResponse = Execute(queryName, queries, credentials);
 
-            if (executeResponse.ExceptionMessage != null)
-                return executeResponse.ExceptionMessage;
+        //    if (executeResponse.ExceptionMessage != null)
+        //        return executeResponse.ExceptionMessage;
 
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
+        //    try
+        //    {
+        //        using (SqlConnection connection = new SqlConnection(connectionString))
+        //        {
+        //            connection.Open();
 
-                    using (SqlCommand sqlCommand = new SqlCommand())
-                    {
-                        sqlCommand.CommandText = CreateTable(executeResponse.DataTable);
-                        sqlCommand.Connection = connection;
-                        sqlCommand.ExecuteNonQuery();
-                    }
+        //            using (SqlCommand sqlCommand = new SqlCommand())
+        //            {
+        //                sqlCommand.CommandText = CreateTable(executeResponse.DataTable);
+        //                sqlCommand.Connection = connection;
+        //                sqlCommand.ExecuteNonQuery();
+        //            }
 
-                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
-                    {
-                        foreach (DataColumn c in executeResponse.DataTable.Columns)
-                            bulkCopy.ColumnMappings.Add(c.ColumnName, c.ColumnName);
+        //            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
+        //            {
+        //                foreach (DataColumn c in executeResponse.DataTable.Columns)
+        //                    bulkCopy.ColumnMappings.Add(c.ColumnName, c.ColumnName);
 
-                        bulkCopy.DestinationTableName = executeResponse.DataTable.TableName;
+        //                bulkCopy.DestinationTableName = executeResponse.DataTable.TableName;
 
-                        bulkCopy.WriteToServer(executeResponse.DataTable);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+        //                bulkCopy.WriteToServer(executeResponse.DataTable);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private static string CreateTable(DataTable table)
         {
@@ -125,61 +125,72 @@ namespace PowerQueryNet.Service
             return sqlsc.Substring(0, sqlsc.Length - 1) + "\n)";
         }
 
-        public ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials)
+        //public ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials, ExecuteOutputFlags executeOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml)
+        public ExecuteResponse Execute(ExecuteRequest executeRequest)
         {
+            Command command = null;
             ExecuteResponse executeResponse = new ExecuteResponse();
             CommandCredentials commandCredentials = new CommandCredentials();
             string mashup = "section Section1;\n\r";
             try
             {
-                if (credentials != null)
+                if (executeRequest.Credentials != null)
                 {
-                    foreach (Credential credential in credentials)
+                    foreach (Credential credential in executeRequest.Credentials)
                     {
                         if (credential is CredentialFile)
                             commandCredentials.SetCredentialFile(((CredentialFile)credential).Path);
                         else if (credential is CredentialWeb)
                             commandCredentials.SetCredentialWeb(((CredentialWeb)credential).Url);
+                        else if (credential is CredentialSQL)
+                            commandCredentials.SetCredentialSQL(((CredentialSQL)credential).SQL);
                         else
-                            throw new NotImplementedException("Only CredentialFile is supported for now.");
+                            throw new NotImplementedException("This Credential kind is not supported for now.");
                     }
                 }                    
 
-                Command command = new Command(commandCredentials);
+                command = new Command(commandCredentials);
 
                 DataTable dataTable = null;
                 
-                if (queries != null)
+                if (executeRequest.Queries != null)
                 {
-                    foreach (Query p in queries)
+                    foreach (Query q in executeRequest.Queries)
                     {
-                        mashup += string.Format("\n\rshared {0} = {1};", p.Name, p.Formula);
+                        string name;
+                        if (q.Name.Contains(" "))
+                            name = string.Format("#\"{0}\"", q.Name);
+                        else
+                            name = q.Name;
+                        mashup += string.Format("\n\rshared {0} = {1};", name, q.Formula);
                     }
                 }
 
-                dataTable = command.Execute(queryName, mashup);
+                dataTable = command.Execute(executeRequest.QueryName, mashup);
 
-                command.Dispose();
+                if (executeRequest.ExecuteOutputFlags == 0)
+                    executeRequest.ExecuteOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml;
 
-                var xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(DataTable));
-                var sw = new StringWriter();
-                xmlSerializer.Serialize(sw, dataTable);
-
-                executeResponse.DataTableXML = sw.ToString();
-
-                var stringWriter = new StringWriter();
-                dataTable.WriteXml(stringWriter);
-                executeResponse.Xml = stringWriter.ToString();
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
+                    executeResponse.DataTableXML = dataTable.ToXML();                    
+                
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Xml))
+                    executeResponse.Xml = dataTable.ToContentXML();
             }
             catch (Exception ex)
             {
                 Program.Log.WriteEntry(ex.ToString(), EventLogEntryType.Error);
                 Program.Log.WriteEntry(mashup, EventLogEntryType.Error);
-                if (queries != null)
-                    Program.Log.WriteEntry(queries.ToXML(), EventLogEntryType.Error);
-                if (credentials != null)
-                    Program.Log.WriteEntry(credentials.ToXML(), EventLogEntryType.Error);                
+                if (executeRequest.Queries != null)
+                    Program.Log.WriteEntry(executeRequest.Queries.ToXML(), EventLogEntryType.Error);
+                if (executeRequest.Credentials != null)
+                    Program.Log.WriteEntry(executeRequest.Credentials.ToXML(), EventLogEntryType.Error);                
                 executeResponse.ExceptionMessage = ex.Message;
+            }
+            finally
+            {
+                if (command != null)
+                    command.Dispose();
             }
 
             return executeResponse;

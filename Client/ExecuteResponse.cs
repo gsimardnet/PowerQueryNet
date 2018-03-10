@@ -8,12 +8,29 @@ using System.Threading.Tasks;
 
 namespace PowerQueryNet.Client
 {
+    /// <summary>
+    /// Response from the PowerQueryCommand.Execute method.
+    /// </summary>
     public class ExecuteResponse
     {
+        /// <summary>
+        /// Result returned as a System.Data.DataTable serialized in XML.
+        /// </summary>
         public string DataTableXML { get; set; }
+
+        /// <summary>
+        /// Result returned as a readable XML.
+        /// </summary>
         public string Xml { get; set; }
+
+        /// <summary>
+        /// Exception message when an error occured.
+        /// </summary>
         public string ExceptionMessage { get; set; }
 
+        /// <summary>
+        /// Result returned as a System.Data.DataTable.
+        /// </summary>
         public DataTable DataTable
         {
             get

@@ -1,4 +1,4 @@
 let  
-    Source = Text.Proper("hello world")  
+    Source = Text.Proper("Hello, World!")  
 in  
     Source 

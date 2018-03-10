@@ -38,6 +38,16 @@ namespace PowerQueryNet.Engine
             return;
         }
 
+        public void SetCredentialSQL(string path)
+        {
+            DataSource dataSource = new DataSource("SQL", path);
+            DataSourceSetting dataSourceSetting = new DataSourceSetting("Windows");
+            
+            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+
+            return;
+        }
+
         public bool LoadCredentials(string fileName)
         {
             try

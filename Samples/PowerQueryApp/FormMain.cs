@@ -9,36 +9,90 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using PowerQueryNet.Client;
 using System.IO;
+using PowerQuery.Samples.Properties;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
-namespace PowerQueryApp
+namespace PowerQuery.Samples
 {
     public partial class FormMain : Form
     {
-        private string myQueriesPath = Path.Combine(Environment.CurrentDirectory, @"MyQueries");
-        private string myExcelPath = Path.Combine(Environment.CurrentDirectory, @"MyExcel");
+        private string queriesPath;
+        private string credentialsPath;
+
+        PowerQueryCommand powerQueryCommand;
 
         public FormMain()
         {
-            InitializeComponent();            
+            InitializeComponent();
+
+            queriesPath = Path.Combine(Environment.CurrentDirectory, Settings.Default.DefaultQueriesPath);
+            credentialsPath = Path.Combine(queriesPath, Settings.Default.DefaultCredentialsFile);
+
+            LoadQueries();
         }
 
-        private void BtnHelloWorldString_Click(object sender, EventArgs e)
+        private void LoadQueries()
         {
-            var q = new Query { Formula = "let hw = \"Hello World\" in hw" };
-            var pq = new PowerQueryCommand();
-            var result = pq.Execute(q);
-            DisplayResult(result);
+            LabelStatus.Text = queriesPath;
+            LabelCredential.Text = credentialsPath;
+            TextBoxPQ.Text = "";
+            GridResult.DataSource = null;
+            LoadPowerQueryCommand();
+            DisplayQueries();
         }
 
-        private void BtnHelloWorld_Click(object sender, EventArgs e)
+        private void ButtonOpenFolder_Click(object sender, EventArgs e)
         {
-            var pq = new PowerQueryCommand
+            using (var dialog = new CommonOpenFileDialog())
             {
-                Queries = Queries.LoadFromFolder(myQueriesPath), //Load every .pq file found in MyQueries folder
-            };
+                dialog.EnsurePathExists = true;
+                dialog.EnsureFileExists = false;
+                dialog.AllowNonFileSystemItems = false;
+                dialog.DefaultFileName = "Select Folder";
 
-            //var result = pq.Execute("#Hello World");
-            var result = pq.Execute("DateTable2018");
+                dialog.Filters.Add(new CommonFileDialogFilter("Power Query Files", ".pq;.m"));
+                dialog.Filters.Add(new CommonFileDialogFilter("Credentials Files", ".xml"));
+
+                dialog.InitialDirectory = queriesPath;
+
+                var commonFileDialogResult = dialog.ShowDialog();
+
+                if (commonFileDialogResult == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(dialog.FileName))
+                {
+                    queriesPath = Directory.Exists(dialog.FileName) ? dialog.FileName : Path.GetDirectoryName(dialog.FileName);
+                    credentialsPath = Path.Combine(queriesPath, Settings.Default.DefaultCredentialsFile);
+                    LoadQueries();
+                }
+            }
+        }
+
+        private void LoadPowerQueryCommand()
+        {
+            if (!File.Exists(credentialsPath))
+                credentialsPath = null;
+            powerQueryCommand = new PowerQueryCommand
+            {
+                Credentials = Credentials.LoadFromFile(credentialsPath),
+                Queries = Queries.LoadFromFolder(queriesPath),
+            };
+        }
+
+        private void DisplayQueries()
+        {
+            var listPQ = new List<string>();
+
+            foreach (Query q in powerQueryCommand.Queries)
+            {
+                listPQ.Add(q.Name);
+            }
+            ListBoxPQ.DataSource = listPQ;
+        }
+
+        private void ButtonExecute_Click(object sender, EventArgs e)
+        {
+            if (ListBoxPQ.SelectedItem == null) return;
+            var queryName = ListBoxPQ.SelectedItem.ToString();
+            var result = powerQueryCommand.Execute(queryName);
 
             DisplayResult(result);
         }
@@ -55,66 +109,27 @@ namespace PowerQueryApp
             }
             else
             {
-                dgvResult.DataSource = result.DataTable;
+                GridResult.DataSource = result.DataTable;
             }
         }
 
-        private void BtnList1and2_Click(object sender, EventArgs e)
+        private void ListBoxPQ_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var pq = new PowerQueryCommand
-            {
-                //Credentials = Credentials.LoadFromFile(Path.Combine(myQueriesPath, "#credentials.xml")),
-                Queries = Queries.LoadFromFolder(myQueriesPath), //Load every .pq file found in MyQueries folder
-            };
-
-            //Add parameters to the queries
-            pq.Queries.Add("List1Xls", string.Format("\"{0}\"", Path.Combine(myExcelPath, "List1.xls")));
-            pq.Queries.Add("List2Xlsx", string.Format("\"{0}\"", Path.Combine(myExcelPath, "List2.xlsx")));
-
-            //Add the required credentials
-            pq.Credentials.Add(new CredentialFile { Path = Path.Combine(myExcelPath, "List1.xls") });
-            pq.Credentials.Add(new CredentialFile { Path = Path.Combine(myExcelPath, "List2.xlsx") });
-
-            //Execute List1and2 query. This query combines results from List1 and List2 queries
-            var result = pq.Execute("List1and2");
-
-            DisplayResult(result);
+            DisplayFormula();
         }
 
-        private void BtnList1_Click(object sender, EventArgs e)
+        private void DisplayFormula()
         {
-            var pq = new PowerQueryCommand
-            {
-                Queries = Queries.LoadFromFolder(myQueriesPath), //Load every .pq file found in MyQueries folder
-            };
-
-            //Add parameter to the query
-            pq.Queries.Add("List1Xls", string.Format("\"{0}\"", Path.Combine(myExcelPath, "List1.xls")));
-
-            //Add the required credentials
-            pq.Credentials.Add(new CredentialFile { Path = Path.Combine(myExcelPath, "List1.xls") });
-
-            var result = pq.Execute("List1");
-
-            DisplayResult(result);
+            if (ListBoxPQ.SelectedItem == null) return;
+            var queryName = ListBoxPQ.SelectedItem.ToString();
+            TextBoxPQ.Text = powerQueryCommand.Queries[queryName].Formula;
         }
 
-        private void BtnList2_Click(object sender, EventArgs e)
+        private void FormMain_Activated(object sender, EventArgs e)
         {
-            var pq = new PowerQueryCommand
-            {
-                Queries = Queries.LoadFromFolder(myQueriesPath), //Load every .pq file found in MyQueries folder
-            };
-
-            //Add parameter to the query
-            pq.Queries.Add("List2Xlsx", string.Format("\"{0}\"", Path.Combine(myExcelPath, "List2.xlsx")));
-
-            //Add the required credentials
-            pq.Credentials.Add(new CredentialFile { Path = Path.Combine(myExcelPath, "List2.xlsx") });
-
-            var result = pq.Execute("List2");
-
-            DisplayResult(result);
+            LoadPowerQueryCommand();
+            DisplayQueries();
+            DisplayFormula();
         }
 
     }

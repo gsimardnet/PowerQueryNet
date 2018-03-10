@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\PowerQueryNet.Client.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,11 +55,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Credential.cs" />
+    <Compile Include="CredentialSQL.cs" />
     <Compile Include="CredentialWeb.cs" />
     <Compile Include="CredentialFile.cs" />
     <Compile Include="Credentials.cs" />
+    <Compile Include="ExecuteOutputFlags.cs" />
     <Compile Include="ExecuteResponse.cs" />
     <Compile Include="IPowerQueryService.cs" />
+    <Compile Include="ExecuteRequest.cs" />
     <Compile Include="Queries.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="ObjectExtension.cs" />

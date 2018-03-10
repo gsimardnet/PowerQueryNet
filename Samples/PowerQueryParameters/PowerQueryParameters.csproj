@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}</ProjectGuid>
+    <ProjectGuid>{97BDC87C-05E4-44D7-8A11-64422BAC0E11}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PowerQuery.Samples</RootNamespace>
-    <AssemblyName>PowerQueryApp</AssemblyName>
+    <AssemblyName>PowerQueryParameters</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,17 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="PowerQueryNet.Client, Version=1.0.1.0, Culture=neutral, PublicKeyToken=65774499621027fd, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="PowerQueryNet.Client, Version=0.0.0.0, Culture=neutral, PublicKeyToken=65774499621027fd, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,16 +69,22 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="MyQueries\#Hello World.pq">
+    <None Include="MyExcel\List1.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MyQueries\AdventureWorksSales.pq">
+    <None Include="MyExcel\List1and2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MyQueries\DateTable2018.pq">
+    <None Include="MyExcel\List2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MyQueries\fnDateTable.pq">
+    <None Include="MyQueries\List1.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MyQueries\List1and2.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MyQueries\List2.pq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
@@ -103,10 +100,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="lib\Microsoft.WindowsAPICodePack.dll" />
-    <Content Include="lib\Microsoft.WindowsAPICodePack.Shell.dll" />
     <Content Include="MyQueries\#credentials.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

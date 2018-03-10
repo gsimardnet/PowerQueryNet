@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
   <?include $(sys.CURRENTDIR)\Config.wxi?>  
-  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.1" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
-    <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="100" Platform ="$(var.Platform)" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
+  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.2" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
+    <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="200" Platform ="x64" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
     <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
@@ -42,12 +42,12 @@
         <util:EventSource Log="PowerQueryNet" Name="PowerQueryNet" EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll"/>
       </Component>
       <Component Id="RegistryEntries32" Guid="f6d04327-f503-427d-9c9b-8899df6699f9" >
-        <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" Action="createAndRemoveOnUninstall">
+        <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" ForceCreateOnInstall="yes" ForceDeleteOnUninstall ="yes">
           <RegistryValue Name="ExePath" Type="string" Value="[DIR01]PowerQueryNet.Service.exe"/>
           <RegistryValue Name="IpcAddress" Type="string" Value="net.pipe://localhost/PowerQueryNet/"/>
           <RegistryValue Name="IpcTimeout" Type="string" Value="00:30:00"/>
         </RegistryKey>
-        <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" Action="createAndRemoveOnUninstall">
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" ForceCreateOnInstall="yes" ForceDeleteOnUninstall ="yes">
           <RegistryValue Type="string" Value="[DIR01]lib\"/>
         </RegistryKey>
       </Component>
@@ -62,12 +62,12 @@
     
     <ComponentGroup Id="cgDIR01" Directory="DIR01">      
       <Component Id="RegistryEntries64" Guid="7300b49c-3d2d-42ce-8af8-d20afa321deb" Win64="yes" >
-        <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" Action="createAndRemoveOnUninstall">
+        <RegistryKey Root="HKLM" Key="Software\PowerQueryNet" ForceCreateOnInstall="yes" ForceDeleteOnUninstall ="yes">
           <RegistryValue Name="ExePath" Type="string" Value="[DIR01]PowerQueryNet.Service.exe"/>
           <RegistryValue Name="IpcAddress" Type="string" Value="net.pipe://localhost/PowerQueryNet/"/>
           <RegistryValue Name="IpcTimeout" Type="string" Value="00:30:00"/>
         </RegistryKey>
-        <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" Action="createAndRemoveOnUninstall">
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\.NETFramework\v4.5.1\AssemblyFoldersEx\PowerQueryNet" ForceCreateOnInstall="yes" ForceDeleteOnUninstall ="yes">
           <RegistryValue Type="string" Value="[DIR01]lib\"/>
         </RegistryKey>
       </Component>      
@@ -144,6 +144,7 @@
     <ComponentGroup Id="cgLib" Directory="lib">      
       <Component Id="f02" Guid="cb86472b-3b9c-42bc-9b8c-1dec2f8d434c" Win64="yes" >
         <File Id="f02.01" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="no"/>
+        <File Id="f02.02" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.xml" KeyPath="no"/>
       </Component>
     </ComponentGroup>
   </Fragment>

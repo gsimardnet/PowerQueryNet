@@ -27,6 +27,9 @@ namespace PowerQueryNet.Engine
             
             mcsb.Location = queryName;
 
+            queryExecutor.AllowNativeQuery = true;
+            queryExecutor.FastCombine = true;
+
             using (Task<QueryExecutionResults> task = queryExecutor.CreateExecution(mcsb, CredentialStore, true))
             {
                 if (task == null)

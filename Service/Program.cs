@@ -63,14 +63,16 @@ namespace PowerQueryNet.Service
                     {
                         string powerQueryFolder = Path.GetDirectoryName(filePath);
                         string powerQueryFile = Path.GetFileNameWithoutExtension(filePath);
-
                         var queries = Queries.LoadFromFolder(powerQueryFolder);
-
-                        queries.Add("List1Xls", string.Format("\"{0}\"", Path.Combine(powerQueryFolder, "..\\MyExcel\\List1.xls")));
-
                         var credentials = Credentials.LoadFromFile(Path.Combine(powerQueryFolder, "#credentials.xml"));
+                        var executeRequest = new ExecuteRequest
+                        {
+                            QueryName = powerQueryFile,
+                            Queries = queries,
+                            Credentials = credentials,
+                        };
 
-                        executeResponse = powerQueryService.Execute(powerQueryFile, queries, credentials);
+                        executeResponse = powerQueryService.Execute(executeRequest);
 
                         OutputResponse(executeResponse);
 

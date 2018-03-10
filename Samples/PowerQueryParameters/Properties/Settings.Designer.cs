@@ -22,23 +22,5 @@ namespace PowerQuery.Samples.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MyQueries")]
-        public string DefaultQueriesPath {
-            get {
-                return ((string)(this["DefaultQueriesPath"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#credentials.xml")]
-        public string DefaultCredentialsFile {
-            get {
-                return ((string)(this["DefaultCredentialsFile"]));
-            }
-        }
     }
 }

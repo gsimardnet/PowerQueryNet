@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace PowerQueryNet.Client
 {
     /// <summary>
-    /// Credential to access a file from the Power Query (M) formulas.
+    /// Credential to access a SQL ressource from the Power Query (M) formulas.
     /// </summary>
-    public class CredentialFile : Credential
+    public class CredentialSQL : Credential
     {
         /// <summary>
         /// Full path of the file
         /// </summary>
-        public string Path { get; set; }
+        public string SQL { get; set; }
     }
 }

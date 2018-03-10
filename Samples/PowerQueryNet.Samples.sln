@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerQueryApp", "PowerQueryApp\PowerQueryApp.csproj", "{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerQueryHelloWorld", "PowerQueryHelloWorld\PowerQueryHelloWorld.csproj", "{CC4C9419-35E4-4EFA-9393-A2FF01EDAEC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerQueryParameters", "PowerQueryParameters\PowerQueryParameters.csproj", "{97BDC87C-05E4-44D7-8A11-64422BAC0E11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEEE2AF9-1C1A-48CB-A907-E5D6B15A0512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC4C9419-35E4-4EFA-9393-A2FF01EDAEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC4C9419-35E4-4EFA-9393-A2FF01EDAEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC4C9419-35E4-4EFA-9393-A2FF01EDAEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC4C9419-35E4-4EFA-9393-A2FF01EDAEC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97BDC87C-05E4-44D7-8A11-64422BAC0E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97BDC87C-05E4-44D7-8A11-64422BAC0E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97BDC87C-05E4-44D7-8A11-64422BAC0E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97BDC87C-05E4-44D7-8A11-64422BAC0E11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

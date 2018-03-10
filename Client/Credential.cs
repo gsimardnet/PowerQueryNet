@@ -8,10 +8,15 @@ using System.Xml.Serialization;
 
 namespace PowerQueryNet.Client
 {
+    /// <summary>
+    /// Credential to access a ressource from the Power Query (M) formulas.
+    /// </summary>
     [XmlInclude(typeof(CredentialFile))]
     [KnownType(typeof(CredentialFile))]
     [XmlInclude(typeof(CredentialWeb))]
     [KnownType(typeof(CredentialWeb))]
+    [XmlInclude(typeof(CredentialSQL))]
+    [KnownType(typeof(CredentialSQL))]
     public abstract class Credential
     {
 
