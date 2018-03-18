@@ -6,9 +6,9 @@ PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (
 
 ## Download
 
-Installer : [PowerQueryNet.msi](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.2/PowerQueryNet.msi)
+Installer : [PowerQueryNet.msi](../../releases/download/v1.0.2/PowerQueryNet.msi)
 
-Samples : [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.2/PowerQueryNet.Samples.zip)
+Samples : [PowerQueryNet.Samples.zip](../../releases/download/v1.0.2/PowerQueryNet.Samples.zip)
 
 ## Hello, World!
 
@@ -21,6 +21,10 @@ var pq = new PowerQueryCommand();
 var result = pq.Execute(q);
 DataTable dt = result.DataTable;
 ```
+## Power Query App
+Run queries in a standalone application
+![PowerQueryApp](Samples/PowerQueryApp/PowerQueryApp.png "Power Query App")
+
 ## Build requirements
 
 * Visual Studio 2015+
