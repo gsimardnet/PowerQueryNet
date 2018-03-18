@@ -69,7 +69,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="lib\Microsoft.Mashup.Tools.VisualStudio.dll.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -87,7 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.csproj">
-      <Project>{4a24bc51-2e5c-43b5-bb49-902af66bb93c}</Project>
+      <Project>{5dcda550-a251-4c69-ae33-88d3bc1326fb}</Project>
       <Name>Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\Engine.csproj">
@@ -96,111 +95,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="lib\EnvDTE.dll" />
-    <Content Include="lib\EnvDTE80.dll" />
-    <Content Include="lib\KernelTraceControl.dll" />
-    <Content Include="lib\Microsoft.ApplicationInsights.dll" />
-    <Content Include="lib\Microsoft.ApplicationInsights.xml" />
-    <Content Include="lib\Microsoft.Data.Edm.NetFX35.dll" />
-    <Content Include="lib\Microsoft.Data.Mashup.dll" />
-    <Content Include="lib\Microsoft.Data.Mashup.Preview.dll" />
-    <Content Include="lib\Microsoft.Data.Mashup.ProviderCommon.dll" />
-    <Content Include="lib\Microsoft.Data.Mashup.ProviderCommon.resources.dll" />
-    <Content Include="lib\Microsoft.Data.Mashup.xml" />
-    <Content Include="lib\Microsoft.Data.OData.NetFX35.dll" />
-    <Content Include="lib\Microsoft.Data.OData.Query.NetFX35.dll" />
-    <Content Include="lib\Microsoft.Data.SapClient.dll" />
-    <Content Include="lib\Microsoft.Data.SapClient.resources.dll" />
-    <Content Include="lib\Microsoft.Diagnostics.Tracing.TraceEvent.dll" />
-    <Content Include="lib\Microsoft.Diagnostics.Tracing.TraceEvent.xml" />
-    <Content Include="lib\Microsoft.Mashup.Container.NetFX40.exe" />
-    <Content Include="lib\Microsoft.Mashup.EventSource.dll" />
-    <Content Include="lib\Microsoft.Mashup.OAuth.resources.dll" />
-    <Content Include="lib\Microsoft.Mashup.ScriptDom.dll" />
-    <Content Include="lib\Microsoft.Mashup.Shims.dll" />
-    <Content Include="lib\Microsoft.Mashup.Tools.dll" />
-    <Content Include="lib\Microsoft.Mashup.Tools.VisualStudio.dll" />
-    <Content Include="lib\Microsoft.Mashup.Tools.VisualStudio.pkgdef" />
-    <Content Include="lib\Microsoft.MashupEngine.resources.dll" />
-    <Content Include="lib\Microsoft.MSXML.dll" />
-    <Content Include="lib\Microsoft.OData.Core.NetFX35.dll" />
-    <Content Include="lib\Microsoft.OData.Edm.NetFX35.dll" />
-    <Content Include="lib\Microsoft.PowerBI.AdomdClient.dll" />
-    <Content Include="lib\Microsoft.PowerBI.AdomdClient.resources.dll" />
-    <Content Include="lib\Microsoft.PowerBI.SPClient.Interfaces.dll" />
-    <Content Include="lib\Microsoft.Spatial.NetFX35.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.ComponentModelHost.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.GraphModel.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.OLE.Interop.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.ProjectAggregator.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.Shell.Framework.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.Shell.Interop.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.TextManager.Interop.dll" />
-    <Content Include="lib\Microsoft.VisualStudio.VSHelp.dll" />
-    <Content Include="lib\msdia140.dll" />
-    <Content Include="lib\PRIVATE_ODBC32.dll" />
-    <Content Include="lib\stdole.dll" />
-    <Content Include="lib\System.Spatial.NetFX35.dll" />
-    <Content Include="lib\VSLangProj.dll" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)\lib\EnvDTE.dll" DestinationFiles="$(TargetDir)\EnvDTE.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\EnvDTE80.dll" DestinationFiles="$(TargetDir)\EnvDTE80.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\KernelTraceControl.dll" DestinationFiles="$(TargetDir)\KernelTraceControl.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.ApplicationInsights.dll" DestinationFiles="$(TargetDir)\Microsoft.ApplicationInsights.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.ApplicationInsights.xml" DestinationFiles="$(TargetDir)\Microsoft.ApplicationInsights.xml" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Edm.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.Edm.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Mashup.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.Mashup.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Mashup.Preview.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.Mashup.Preview.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Mashup.ProviderCommon.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.Mashup.ProviderCommon.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Mashup.ProviderCommon.resources.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.Mashup.ProviderCommon.resources.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.Mashup.xml" DestinationFiles="$(TargetDir)\Microsoft.Data.Mashup.xml" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.OData.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.OData.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.OData.Query.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.OData.Query.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.SapClient.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.SapClient.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Data.SapClient.resources.dll" DestinationFiles="$(TargetDir)\Microsoft.Data.SapClient.resources.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Diagnostics.Tracing.TraceEvent.dll" DestinationFiles="$(TargetDir)\Microsoft.Diagnostics.Tracing.TraceEvent.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Diagnostics.Tracing.TraceEvent.xml" DestinationFiles="$(TargetDir)\Microsoft.Diagnostics.Tracing.TraceEvent.xml" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Container.NetFX40.exe" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Container.NetFX40.exe" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.EventSource.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.EventSource.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.OAuth.resources.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.OAuth.resources.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.ScriptDom.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.ScriptDom.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Shims.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Shims.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Tools.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Tools.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Tools.VisualStudio.dll" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Tools.VisualStudio.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Tools.VisualStudio.dll.config" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Tools.VisualStudio.dll.config" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Mashup.Tools.VisualStudio.pkgdef" DestinationFiles="$(TargetDir)\Microsoft.Mashup.Tools.VisualStudio.pkgdef" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.MashupEngine.resources.dll" DestinationFiles="$(TargetDir)\Microsoft.MashupEngine.resources.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.MSXML.dll" DestinationFiles="$(TargetDir)\Microsoft.MSXML.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.OData.Core.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.OData.Core.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.OData.Edm.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.OData.Edm.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.PowerBI.AdomdClient.dll" DestinationFiles="$(TargetDir)\Microsoft.PowerBI.AdomdClient.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.PowerBI.AdomdClient.resources.dll" DestinationFiles="$(TargetDir)\Microsoft.PowerBI.AdomdClient.resources.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.PowerBI.SPClient.Interfaces.dll" DestinationFiles="$(TargetDir)\Microsoft.PowerBI.SPClient.Interfaces.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.Spatial.NetFX35.dll" DestinationFiles="$(TargetDir)\Microsoft.Spatial.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.ComponentModelHost.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.ComponentModelHost.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.GraphModel.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.GraphModel.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.OLE.Interop.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.OLE.Interop.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.ProjectAggregator.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.ProjectAggregator.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.Shell.Framework.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.Shell.Framework.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.Shell.Interop.9.0.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.Shell.Interop.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.Shell.Interop.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.TextManager.Interop.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.TextManager.Interop.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\Microsoft.VisualStudio.VSHelp.dll" DestinationFiles="$(TargetDir)\Microsoft.VisualStudio.VSHelp.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\msdia140.dll" DestinationFiles="$(TargetDir)\msdia140.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\PRIVATE_ODBC32.dll" DestinationFiles="$(TargetDir)\PRIVATE_ODBC32.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\stdole.dll" DestinationFiles="$(TargetDir)\stdole.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\System.Spatial.NetFX35.dll" DestinationFiles="$(TargetDir)\System.Spatial.NetFX35.dll" />
-    <Copy SourceFiles="$(ProjectDir)\lib\VSLangProj.dll" DestinationFiles="$(TargetDir)\VSLangProj.dll" />
-    <Message Text="lib copied to $(TargetDir)" Importance="high" />
+      
   </Target>
 </Project>

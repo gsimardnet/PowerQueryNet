@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
   <?include $(sys.CURRENTDIR)\Config.wxi?>  
-  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.2" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
+  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.3" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
     <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="200" Platform ="x64" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
     <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -21,6 +21,19 @@
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2">1</Publish>
       <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">1</Publish>
     </UI>
+  
+    <Binary Id="PowerQueryNet.Setup.CA" SourceFile="..\..\..\Setup.Actions\bin\Debug\PowerQueryNet.Setup.Actions.CA.dll"/>
+    <CustomAction Id='ExtractDependencies.Property' Property='ExtractDependencies' Value='installPath=[DIR01];sourcePath=[SourceDir]'/>
+    <CustomAction Id="ExtractDependencies" BinaryKey="PowerQueryNet.Setup.CA" DllEntry="ExtractDependencies" Execute="deferred" Impersonate="no" />
+    <CustomAction Id='RemoveDependencies.Property' Property='RemoveDependencies' Value='installPath=[DIR01]'/>
+    <CustomAction Id="RemoveDependencies" BinaryKey="PowerQueryNet.Setup.CA" DllEntry="RemoveDependencies" Execute="deferred" Impersonate="no" />
+    <InstallExecuteSequence>
+      <Custom Action='ExtractDependencies.Property' Before='InstallFinalize'/>
+      <Custom Action='ExtractDependencies' After='ExtractDependencies.Property'>(NOT Installed) OR (REINSTALL)</Custom>
+      <Custom Action='RemoveDependencies.Property' Before='InstallFinalize'/>
+      <Custom Action='RemoveDependencies' After='RemoveDependencies.Property'>(REMOVE="ALL")</Custom>
+    </InstallExecuteSequence>
+  
   </Product>      
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -72,55 +85,7 @@
         </RegistryKey>
       </Component>      
       <Component Id="f01" Guid="5f6e927b-fb27-4cd3-9b65-97d8dd9bd793" Win64="yes" >
-        <File Id="f01.01" Source="..\..\..\Service\bin\Debug\EnvDTE.dll" KeyPath="no"/>
-        <File Id="f01.02" Source="..\..\..\Service\bin\Debug\EnvDTE80.dll" KeyPath="no"/>
-        <File Id="f01.03" Source="..\..\..\Service\bin\Debug\KernelTraceControl.dll" KeyPath="no"/>
-        <File Id="f01.04" Source="..\..\..\Service\bin\Debug\Microsoft.ApplicationInsights.dll" KeyPath="no"/>
-        <File Id="f01.05" Source="..\..\..\Service\bin\Debug\Microsoft.Data.Edm.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.06" Source="..\..\..\Service\bin\Debug\Microsoft.Data.Mashup.dll" KeyPath="no"/>
-        <File Id="f01.07" Source="..\..\..\Service\bin\Debug\Microsoft.Data.Mashup.Preview.dll" KeyPath="no"/>
-        <File Id="f01.08" Source="..\..\..\Service\bin\Debug\Microsoft.Data.Mashup.ProviderCommon.dll" KeyPath="no"/>
-        <File Id="f01.09" Source="..\..\..\Service\bin\Debug\Microsoft.Data.Mashup.ProviderCommon.resources.dll" KeyPath="no"/>
-        <File Id="f01.10" Source="..\..\..\Service\bin\Debug\Microsoft.Data.OData.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.11" Source="..\..\..\Service\bin\Debug\Microsoft.Data.OData.Query.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.12" Source="..\..\..\Service\bin\Debug\Microsoft.Data.SapClient.dll" KeyPath="no"/>
-        <File Id="f01.13" Source="..\..\..\Service\bin\Debug\Microsoft.Data.SapClient.resources.dll" KeyPath="no"/>
-        <File Id="f01.14" Source="..\..\..\Service\bin\Debug\Microsoft.Diagnostics.Tracing.TraceEvent.dll" KeyPath="no"/>
-        <File Id="f01.15" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.Container.NetFX40.exe" KeyPath="no"/>
-        <File Id="f01.16" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.EventSource.dll" KeyPath="no"/>
-        <File Id="f01.17" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.OAuth.dll" KeyPath="no"/>
-        <File Id="f01.18" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.OAuth.resources.dll" KeyPath="no"/>
-        <File Id="f01.19" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.ScriptDom.dll" KeyPath="no"/>
-        <File Id="f01.20" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.Shims.dll" KeyPath="no"/>
-        <File Id="f01.21" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.Tools.dll" KeyPath="no"/>
-        <File Id="f01.22" Source="..\..\..\Service\bin\Debug\Microsoft.Mashup.Tools.VisualStudio.dll" KeyPath="no"/>
-        <File Id="f01.23" Source="..\..\..\Service\bin\Debug\Microsoft.MashupEngine.dll" KeyPath="no"/>
-        <File Id="f01.24" Source="..\..\..\Service\bin\Debug\Microsoft.MashupEngine.resources.dll" KeyPath="no"/>
-        <File Id="f01.25" Source="..\..\..\Service\bin\Debug\Microsoft.mshtml.dll" KeyPath="no"/>
-        <File Id="f01.26" Source="..\..\..\Service\bin\Debug\Microsoft.MSXML.dll" KeyPath="no"/>
-        <File Id="f01.27" Source="..\..\..\Service\bin\Debug\Microsoft.OData.Core.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.28" Source="..\..\..\Service\bin\Debug\Microsoft.OData.Edm.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.29" Source="..\..\..\Service\bin\Debug\Microsoft.PowerBI.AdomdClient.dll" KeyPath="no"/>
-        <File Id="f01.30" Source="..\..\..\Service\bin\Debug\Microsoft.PowerBI.AdomdClient.resources.dll" KeyPath="no"/>
-        <File Id="f01.31" Source="..\..\..\Service\bin\Debug\Microsoft.PowerBI.SPClient.Interfaces.dll" KeyPath="no"/>
-        <File Id="f01.32" Source="..\..\..\Service\bin\Debug\Microsoft.Spatial.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.33" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.ComponentModelHost.dll" KeyPath="no"/>
-        <File Id="f01.34" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.GraphModel.dll" KeyPath="no"/>
-        <File Id="f01.35" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.OLE.Interop.dll" KeyPath="no"/>
-        <File Id="f01.36" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.ProjectAggregator.dll" KeyPath="no"/>
-        <File Id="f01.37" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.Shell.Framework.dll" KeyPath="no"/>
-        <File Id="f01.38" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" KeyPath="no"/>
-        <File Id="f01.39" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.Shell.Interop.8.0.dll" KeyPath="no"/>
-        <File Id="f01.40" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.Shell.Interop.9.0.dll" KeyPath="no"/>
-        <File Id="f01.41" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.Shell.Interop.dll" KeyPath="no"/>
-        <File Id="f01.42" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.8.0.dll" KeyPath="no"/>
-        <File Id="f01.43" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.dll" KeyPath="no"/>
-        <File Id="f01.44" Source="..\..\..\Service\bin\Debug\Microsoft.VisualStudio.VSHelp.dll" KeyPath="no"/>
-        <File Id="f01.45" Source="..\..\..\Service\bin\Debug\msdia140.dll" KeyPath="no"/>        
-        <File Id="f01.46" Source="..\..\..\Service\bin\Debug\PRIVATE_ODBC32.dll" KeyPath="no"/>
-        <File Id="f01.47" Source="..\..\..\Service\bin\Debug\stdole.dll" KeyPath="no"/>
-        <File Id="f01.48" Source="..\..\..\Service\bin\Debug\System.Spatial.NetFX35.dll" KeyPath="no"/>
-        <File Id="f01.49" Source="..\..\..\Service\bin\Debug\VSLangProj.dll" KeyPath="no"/>
+
         <File Id="f01.50" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.dll" KeyPath="no"/>
         <File Id="f01.51" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Engine.dll" KeyPath="no"/>
         <File Id="f01.52" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Service.exe" KeyPath="yes"/>

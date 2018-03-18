@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Microsoft Power Query SDK - Pre-Release or Evaluation Use Terms.rtf
