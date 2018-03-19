@@ -260,3 +260,8 @@ paket-files/
 __pycache__/
 *.pyc
 /Microsoft Power Query SDK - Pre-Release or Evaluation Use Terms.rtf
+/Engine/lib/Microsoft.MashupEngine.dll
+/Engine/lib/Microsoft.Mashup.Tools.dll
+/Engine/lib/Microsoft.Mashup.OAuth.dll
+/Engine/lib/Microsoft.Data.Mashup.dll
+/Engine/lib/Microsoft.ApplicationInsights.dll
