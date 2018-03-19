@@ -17,7 +17,7 @@ Samples: [PowerQueryNet.Samples.zip](../../releases/download/v1.0.3/PowerQueryNe
 ## Hello, World!
 
 1. Install `PowerQueryNet.msi`
-2. From you .NET project, add a reference to `PowerQueryNet.Client`
+2. From your .NET project, add a reference to `PowerQueryNet.Client`
 3. Run the following:
 ```txt
 var q = new Query { Formula = "let hw = \"Hello World\" in hw" };
