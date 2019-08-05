@@ -23,9 +23,6 @@ namespace PowerQueryNet.Client
         //ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials);
         ExecuteResponse Execute(ExecuteRequest executeRequest);
 
-        //[OperationContract]        
-        //string ExecuteToSQL(string connectionString, string queryName, Queries queries, Credentials credentials);
-
         /// <summary>
         /// Get the mashup (queries) from an Excel or Power BI file.
         /// </summary>

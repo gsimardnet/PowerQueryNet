@@ -12,24 +12,35 @@ namespace PowerQueryNet.Client
     [Flags]
     public enum ExecuteOutputFlags
     {
-        /// <summary>
-        /// Outputs result to DataTable
-        /// </summary>
-        DataTable = 1,
-
-        /// <summary>
-        /// Outputs result to Xml
-        /// </summary>
-        Xml = 2,
 
         /// <summary>
         /// Outputs result to comma-separated values (CSV)
         /// </summary>
-        Csv = 4,
+        Csv = 1,
+
+        /// <summary>
+        /// Outputs result to DataTable
+        /// </summary>
+        DataTable = 2,
+
+        /// <summary>
+        /// Outputs result to HTML
+        /// </summary>
+        Html = 4,
+
+        /// <summary>
+        /// Outputs result to JSON
+        /// </summary>
+        Json = 8,
 
         /// <summary>
         /// Outputs result to a SQL Server Table
         /// </summary>
-        Sql = 8
+        Sql = 16,
+
+        /// <summary>
+        /// Outputs result to Xml
+        /// </summary>
+        Xml = 32
     }
 }

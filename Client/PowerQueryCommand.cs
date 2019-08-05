@@ -18,10 +18,54 @@ namespace PowerQueryNet.Client
     /// </summary>
     public class PowerQueryCommand
     {
+        private string mashup = null;
+        private Queries queries = null;
+
+        /// <summary>
+        /// Initializes a new instance of the PowerQueryCommand class.
+        /// </summary>
+        public PowerQueryCommand()
+        {
+            Credentials = new Credentials();
+            //Parameters = new Parameters();
+            Queries = new Queries();
+        }
+
         /// <summary>
         /// Collection of instances of Query to execute Power Query (M) formulas.
         /// </summary>
-        public Queries Queries { get; set; }
+        public Queries Queries
+        {
+            get
+            {
+                return queries;
+            }
+            set
+            {
+                if (value != null && value.Count > 0 && mashup != null)
+                    throw new InvalidOperationException("Queries cannot be assigned when Mashup is defined.");
+
+                queries = value;
+            }
+        }
+
+        /// <summary>
+        /// Mashup (queries) from which the query will be executed.
+        /// </summary>
+        public string Mashup
+        {
+            get
+            {
+                return mashup;
+            }
+            set
+            {
+                if (value != null && Queries != null && Queries.Count > 0)
+                    throw new InvalidOperationException("Mashup cannot be assigned when Queries are defined.");
+
+                mashup = value;
+            }
+        }
 
         /// <summary>
         /// Collection of instances of Credential to access one or many ressources from the Power Query (M) formulas.
@@ -29,12 +73,18 @@ namespace PowerQueryNet.Client
         public Credentials Credentials { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the PowerQueryCommand class.
+        /// Collection of instances of Parameter in the Power Query (M) formulas.
         /// </summary>
-        public PowerQueryCommand()
+        //public Parameters Parameters { get; set; }
+
+        /// <summary>
+        /// Execute the specified ExecuteRequest.
+        /// </summary>
+        /// <param name="executeRequest">ExecuteRequest to execute</param>
+        /// <returns></returns>
+        public ExecuteResponse Execute(ExecuteRequest executeRequest)
         {
-            Queries = new Queries();
-            Credentials = new Credentials();
+            return ExecuteMethod("Execute", executeRequest);
         }
 
         /// <summary>
@@ -44,7 +94,7 @@ namespace PowerQueryNet.Client
         /// <returns></returns>
         public ExecuteResponse Execute(string queryName)
         {
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = this.Queries, Credentials = this.Credentials });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup });
         }
 
         /// <summary>
@@ -57,7 +107,7 @@ namespace PowerQueryNet.Client
             if (Queries[query.Name] == null)
                 Queries.Add(query);
 
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = query.Name, Queries = this.Queries, Credentials = this.Credentials });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = query.Name, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup });
         }
 
         /// <summary>
@@ -67,16 +117,24 @@ namespace PowerQueryNet.Client
         /// <param name="queries">Collection of instances of Query to execute Power Query (M) formulas.</param>
         /// <param name="credentials">Collection of instances of Credential to access one or many ressources from the Power Query (M) formulas.</param>
         /// <returns></returns>
-        public static ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials)
+        public static ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials = null)
         {
             //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
             return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = queries, Credentials = credentials });
         }
 
-        //public string ExecuteToSQL(string connectionString, string queryName, Queries queries, Credentials credentials)
-        //{
-        //    return ExecuteMethod("ExecuteToSQL", connectionString, queryName, queries, credentials);
-        //}
+        /// <summary>
+        /// Execute the specified query.
+        /// </summary>
+        /// <param name="queryName">Name of the query to execute</param>
+        /// <param name="mashup">Mashup (queries) from which the query will be executed</param>
+        /// <param name="credentials">Collection of instances of Credential to access one or many ressources from the Power Query (M) formulas.</param>
+        /// <returns></returns>
+        public static ExecuteResponse Execute(string queryName, string mashup, Credentials credentials = null)
+        {
+            //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Mashup = mashup, Credentials = credentials });
+        }
 
         /// <summary>
         /// Get the mashup (queries) from an Excel or Power BI file.
@@ -111,13 +169,19 @@ namespace PowerQueryNet.Client
             binding.ReceiveTimeout = ipcTimeout;
             binding.OpenTimeout = ipcTimeout;
             binding.CloseTimeout = ipcTimeout;
+            binding.MaxBufferPoolSize = 2147483647;
+            binding.MaxBufferPoolSize = 2147483647;
             binding.MaxReceivedMessageSize = 2147483647;
             powerQueryService = ChannelFactory<IPowerQueryService>.CreateChannel(binding, endpointAddress);
 
             if (method == "Execute")
-                return powerQueryService.Execute((ExecuteRequest)obj[0]);
-            //else if (method == "ExecuteToSQL")
-            //    return powerQueryService.ExecuteToSQL((string)obj[0], (string)obj[1], (Queries)obj[2], (Credentials)obj[3]);
+            {
+                var executeRequest = (ExecuteRequest)obj[0];
+                executeRequest.TempPath = System.IO.Path.GetTempPath();
+                var executeResponse = powerQueryService.Execute(executeRequest);
+                executeResponse.LoadReturnValues(executeRequest.ExecuteOutputFlags);
+                return executeResponse;
+            }                
             else if (method == "MashupFromFile")
                 return powerQueryService.MashupFromFile((string)obj[0]);
             else

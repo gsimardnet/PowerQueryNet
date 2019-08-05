@@ -13,6 +13,8 @@ namespace PowerQueryNet.Client
     /// </summary>
     [XmlInclude(typeof(CredentialFile))]
     [KnownType(typeof(CredentialFile))]
+    [XmlInclude(typeof(CredentialFolder))]
+    [KnownType(typeof(CredentialFolder))]
     [XmlInclude(typeof(CredentialWeb))]
     [KnownType(typeof(CredentialWeb))]
     [XmlInclude(typeof(CredentialSQL))]

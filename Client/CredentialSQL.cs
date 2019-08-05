@@ -12,8 +12,18 @@ namespace PowerQueryNet.Client
     public class CredentialSQL : Credential
     {
         /// <summary>
-        /// Full path of the file
+        /// SQL Server Name and database name. Format: serverName;databaseName
         /// </summary>
         public string SQL { get; set; }
+
+        /// <summary>
+        /// Username value
+        /// </summary>
+        public string Username { get; set; }
+
+        /// <summary>
+        /// Password value
+        /// </summary>
+        public string Password { get; set; }
     }
 }

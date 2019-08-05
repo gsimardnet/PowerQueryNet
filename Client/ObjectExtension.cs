@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Script.Serialization;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -17,7 +21,7 @@ namespace PowerQueryNet.Client
     public static class ObjectExtension
     {
         /// <summary>
-        /// Writes the current contents of the DataTable as XML
+        /// Converts the current contents of the DataTable to XML
         /// </summary>
         /// <param name="dataTable"></param>
         /// <returns></returns>
@@ -29,7 +33,87 @@ namespace PowerQueryNet.Client
         }
 
         /// <summary>
-        /// Writes the current contents of the DataRow as XML
+        /// Converts the current contents of the DataTable to HTML
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
+        public static string ToHTML(this DataTable dataTable)
+        {
+            string columnHeaders = "";
+            foreach (DataColumn dc in dataTable.Columns)
+            {
+                columnHeaders += $"\n                        <th>{dc.ColumnName}</th>";
+            }
+
+            string rows = "";
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                string row = "";
+                foreach (var i in dr.ItemArray)
+                {
+                    row += $"\n                        <td>{HttpUtility.HtmlEncode(i.ToString())}</td>";
+                }
+                row = $"\n                    <tr>{row}</tr>";
+                rows += row;
+            }
+
+            string html = $@"
+                <html>
+                  <style type='text/css'>
+                    html {{
+                      background-color : #1E1E1E; 
+                    }}
+                    h1 {{ 
+                      color : #2C91AE;
+                      text-align: center;
+                      font-size : 24px; 
+                    }}
+                    th {{
+                      color : white;
+                      text-align: left;
+                      font-size : 18px; 
+                    }}
+                    td {{
+                      color : #DCDCDC;
+                    }} 
+                  </style>
+                  <h1>{dataTable.TableName}</h1>
+                  <table style='width:100%'>
+                    <tr>{columnHeaders}
+                    </tr>{rows}
+                  </table>
+                </html>
+            ";
+
+            return html;
+        }
+
+        /// <summary>
+        /// Converts the current contents of the DataTable to JSON
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
+        public static string ToContentJSON(this DataTable dataTable)
+        {
+            JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
+            List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var row = new Dictionary<string, object>();
+                foreach (DataColumn dc in dataTable.Columns)
+                {
+                    if (dr[dc] is DateTime dt)
+                        row.Add(dc.ColumnName, dt.ToString());
+                    else
+                        row.Add(dc.ColumnName, dr[dc]); 
+                }
+                rows.Add(row);
+            }
+            return javaScriptSerializer.Serialize(rows);
+        }
+
+        /// <summary>
+        /// Converts the current contents of the DataRow to XML
         /// </summary>
         /// <param name="dataRow"></param>
         /// <returns></returns>
@@ -39,6 +123,65 @@ namespace PowerQueryNet.Client
             dataTable = dataRow.Table.Clone();
             dataTable.ImportRow(dataRow);
             return dataTable.ToXML();
+        }
+
+        /// <summary>
+        /// Converts the current contents of the DataTable to comma-separated values (CSV)
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <param name="delimiter"></param>
+        /// <param name="inQuote"></param>
+        /// <returns></returns>
+        public static string ToDelimitedFile(this DataTable dataTable, char delimiter, bool inQuote)
+        {
+            string content = "";
+            string lastColumn = dataTable.Columns[dataTable.Columns.Count - 1].ColumnName;
+            foreach (DataColumn dc in dataTable.Columns)
+            {
+                content += dc.ColumnName;
+                if (dc.ColumnName != lastColumn)
+                    content += delimiter;
+            }
+
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                content += Environment.NewLine;
+
+                foreach (DataColumn dc in dataTable.Columns)
+                {
+                    if (inQuote)
+                        content += '"' + dr[dc.ColumnName].ToString() + '"';
+                    else
+                        content += dr[dc.ColumnName].ToString();
+
+                    //if (inQuote)                        
+                    //    content += '"' + dr.Field<string>(dc.ColumnName) + '"';
+                    //else
+                    //    content += dr.Field<string>(dc.ColumnName);
+
+                    if (dc.ColumnName != lastColumn)
+                        content += delimiter;
+                }
+            }
+
+            return content;
+        }
+
+        /// <summary>
+        /// Serialize object to JSON.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string ToJSON<T>(this T value, Type type = null)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(value.GetType());
+            serializer.WriteObject(memoryStream, value);
+            byte[] memoryStreamArray = memoryStream.ToArray();
+            memoryStream.Close();
+            return Encoding.UTF8.GetString(memoryStreamArray, 0, memoryStreamArray.Length);
         }
 
         /// <summary>

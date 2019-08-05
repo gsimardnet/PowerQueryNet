@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
   <?include $(sys.CURRENTDIR)\Config.wxi?>  
-  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.0.3" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
+  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.1.0" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
     <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="200" Platform ="x64" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />        
     <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -32,8 +32,7 @@
       <Custom Action='ExtractDependencies' After='ExtractDependencies.Property'>(NOT Installed) OR (REINSTALL)</Custom>
       <Custom Action='RemoveDependencies.Property' Before='InstallFinalize'/>
       <Custom Action='RemoveDependencies' After='RemoveDependencies.Property'>(REMOVE="ALL")</Custom>
-    </InstallExecuteSequence>
-  
+    </InstallExecuteSequence>    
   </Product>      
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -51,6 +50,9 @@
   </Fragment>
   <Fragment>
     <ComponentGroup Id="cgEventSource" Directory="TARGETDIR">
+      <Component Id="Path" Guid="9fe03dda-12f0-4683-adf7-0d0916314920">
+        <Environment Id="PATH" Name="PATH" Value="[DIR01]" Permanent="no" Part="last" Action="set" System="yes" />
+      </Component>
       <Component Id="EventSource" Guid="0c8fe714-3c04-455f-97f4-e9a1b06bea18" >
         <util:EventSource Log="PowerQueryNet" Name="PowerQueryNet" EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll"/>
       </Component>
@@ -92,11 +94,12 @@
         <File Id="f01.53" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Client.pdb" KeyPath="no"/>
         <File Id="f01.54" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Engine.pdb" KeyPath="no"/>
         <File Id="f01.55" Source="..\..\..\Service\bin\Debug\PowerQueryNet.Service.pdb" KeyPath="no"/>
+        <File Id="f01.60" Source="..\..\..\PQNet\bin\Debug\PQNet.exe" KeyPath="no"/>
 
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Vital="yes" ErrorControl="ignore" Interactive="no"
               Name="PowerQueryNet.Service"
               DisplayName="PowerQueryNet Service"
-              Description = "Run Power Query M formula language from .NET applications."
+              Description = "Run Power Query M formula language from anywhere."
               Account="LocalSystem"
               Start="auto"
               >

@@ -21,15 +21,10 @@ namespace PowerQueryNet.Service
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
 
-        public static EventLog Log;
+        public static EventLog Log = new EventLog { Source = "PowerQueryNet" };
 
         static void Main(string[] args)
         {
-            Log = new EventLog
-            {
-                Source = "PowerQueryNet"
-            };
-
             if (args == null || args.Length == 0)
             {
                 ServiceBase.Run(new WindowsService());
@@ -47,7 +42,7 @@ namespace PowerQueryNet.Service
                     Log.WriteEntry(ex.ToString(), EventLogEntryType.Error);
                 }
             }
-            else if (args.Length == 1)
+            else //if (args.Length == 1)
             {
                 string filePath = args[0];
                 string fileExtension = Path.GetExtension(filePath);
@@ -75,9 +70,6 @@ namespace PowerQueryNet.Service
                         executeResponse = powerQueryService.Execute(executeRequest);
 
                         OutputResponse(executeResponse);
-
-                        //string connectionString = @"Data Source=P16019\SQL2016; Integrated Security=true; Initial Catalog=TEST";
-                        //string response = powerQueryService.ExecuteToSQL(connectionString, powerQueryFile, queries, credentials);
                     }
 
                     if (fileExtension == ".xlsx" 
@@ -99,18 +91,18 @@ namespace PowerQueryNet.Service
                 }
 
             }
-            else
-            {
-                AllocConsole();
-                Console.WriteLine(" Usage: -ipc");
-                Console.WriteLine(" Usage: [Power Query File Path]");
-                Console.WriteLine(" Usage: [Excel or Power BI File Path]");
-                Console.WriteLine("");
-                Console.WriteLine(" -ipc\t\t\t\tOpen named pipes service for interprocess communication");
-                Console.WriteLine(" [Power Query File Path]\tRun Power Query formula (*.pq)");
-                Console.WriteLine(" [Excel or Power BI File Path]\tGet Mashup from Excel or Power BI (*.xlsx;*.xlsm;*.pbix;*.pbit)");
-                Console.ReadLine();
-            }
+            //else
+            //{
+            //    AllocConsole();
+            //    Console.WriteLine(" Usage: -ipc");
+            //    Console.WriteLine(" Usage: [Power Query File Path]");
+            //    Console.WriteLine(" Usage: [Excel or Power BI File Path]");
+            //    Console.WriteLine("");
+            //    Console.WriteLine(" -ipc\t\t\t\tOpen named pipes service for interprocess communication");
+            //    Console.WriteLine(" [Power Query File Path]\tRun Power Query formula (*.pq)");
+            //    Console.WriteLine(" [Excel or Power BI File Path]\tGet Mashup from Excel or Power BI (*.xlsx;*.xlsm;*.pbix;*.pbit)");
+            //    Console.ReadLine();
+            //}
 
         }
 

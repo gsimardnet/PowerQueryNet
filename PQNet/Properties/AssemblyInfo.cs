@@ -1,12 +1,13 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PowerQueryNet.Setup.Actions")]
+[assembly: AssemblyTitle("PowerQueryNet.PQNet")]
 [assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Guillaume Simard")]
 [assembly: AssemblyProduct("PowerQueryNet")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c4521615-f8a1-4021-90c4-a2b85eb09703")]
+[assembly: Guid("91d3b517-685e-4806-a17f-5589cff21e29")]
 
 // Version information for an assembly consists of the following four values:
 //

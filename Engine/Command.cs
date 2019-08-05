@@ -5,6 +5,7 @@ using PowerQueryNet.Client;
 using System;
 using System.Data;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PowerQueryNet.Engine
@@ -30,17 +31,35 @@ namespace PowerQueryNet.Engine
             queryExecutor.AllowNativeQuery = true;
             queryExecutor.FastCombine = true;
 
-            using (Task<QueryExecutionResults> task = queryExecutor.CreateExecution(mcsb, CredentialStore, true))
+            Task<QueryExecutionResults> task = null;
+
+            //using (Task<QueryExecutionResults> task = queryExecutor.CreateExecution(mcsb, CredentialStore, true))
+            //MashupConnection.SetProcessContainerDirectory(@"Z:\Desktop\PowerQuery\temp2", true);
+            
+            try
             {
+                if (string.IsNullOrWhiteSpace(queryName))
+                    throw new InvalidOperationException("QueryName must be specified.");
+                
+                task = queryExecutor.CreateExecution(mcsb, CredentialStore, true);
+
                 if (task == null)
                     throw new Exception("QueryExecutionResults is null.");
-
+                
                 task.RunSynchronously();
                 if (task.Result.Error != null)
                     throw task.Result.Error;
 
                 dataTable = task.Result.Table;
                 dataTable.TableName = mcsb.Location;
+            }
+            finally
+            {
+                if (task != null)
+                    task.Dispose();
+                
+                //queryExecutor.Cancel();
+                //MashupConnection.TryCleanup();
             }
 
             return dataTable;

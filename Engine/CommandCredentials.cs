@@ -28,6 +28,16 @@ namespace PowerQueryNet.Engine
             return;
         }
 
+        public void SetCredentialFolder(string folderName)
+        {
+            DataSource dataSource = new DataSource("Folder", folderName);
+            DataSourceSetting dataSourceSetting = new DataSourceSetting("Windows");
+
+            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+
+            return;
+        }
+
         public void SetCredentialWeb(string url)
         {
             DataSource dataSource = new DataSource("Web", url);
@@ -38,16 +48,23 @@ namespace PowerQueryNet.Engine
             return;
         }
 
-        public void SetCredentialSQL(string path)
+        public void SetCredentialSQL(string sql, string userName, string password)
         {
-            DataSource dataSource = new DataSource("SQL", path);
-            DataSourceSetting dataSourceSetting = new DataSourceSetting("Windows");
-            
-            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+            DataSource dataSource = new DataSource("SQL", sql);
+            if (userName == null)
+            {
+                DataSourceSetting dataSourceSetting = new DataSourceSetting("Windows");
+                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+            }
+            else
+            {
+                var dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
+                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+            }
 
             return;
         }
-
+        
         public bool LoadCredentials(string fileName)
         {
             try

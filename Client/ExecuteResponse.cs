@@ -13,15 +13,26 @@ namespace PowerQueryNet.Client
     /// </summary>
     public class ExecuteResponse
     {
+
         /// <summary>
         /// Result returned as a System.Data.DataTable serialized in XML.
         /// </summary>
-        public string DataTableXML { get; set; }
+        private string DataTableXML { get; set; } = null;
 
         /// <summary>
-        /// Result returned as a readable XML.
+        /// Result returned as a comma-separated values (CSV)
         /// </summary>
-        public string Xml { get; set; }
+        public string Csv { get; set; }
+
+        /// <summary>
+        /// Result returned as a System.Data.DataTable.
+        /// </summary>
+        public DataTable DataTable { get; set; } = null;
+
+        /// <summary>
+        /// Path of the temporary file created from DataTableXML.
+        /// </summary>
+        public string DataTableFile { get; set; }
 
         /// <summary>
         /// Exception message when an error occured.
@@ -29,24 +40,47 @@ namespace PowerQueryNet.Client
         public string ExceptionMessage { get; set; }
 
         /// <summary>
-        /// Result returned as a System.Data.DataTable.
+        /// Result returned as HTML
         /// </summary>
-        public DataTable DataTable
+        public string Html { get; set; }
+
+        /// <summary>
+        /// Result returned as JSON
+        /// </summary>
+        public string Json { get; set; }
+
+        /// <summary>
+        /// Result returned as a readable XML.
+        /// </summary>
+        public string Xml { get; set; } = null;
+
+        internal void LoadReturnValues(ExecuteOutputFlags executeOutputFlags)
         {
-            get
+            if (DataTableFile != null)
             {
-                if (DataTableXML != null)
-                {
-                    var dt = new DataTable();
-                    StringReader sr = new StringReader(DataTableXML);
-                    dt.ReadXml(sr);
-                    return dt;
-                }
-                else
-                    return null;
+                DataTableXML = File.ReadAllText(DataTableFile);
+                File.Delete(DataTableFile);
+                DataTableFile = null;
+
+                var dataTable = new DataTable();
+                StringReader sr = new StringReader(DataTableXML);
+                dataTable.ReadXml(sr);
+
+                if (executeOutputFlags == ExecuteOutputFlags.DataTable)
+                    DataTable = dataTable;
+
+                if (executeOutputFlags == ExecuteOutputFlags.Csv)
+                    Csv = dataTable.ToDelimitedFile(',', true);
+
+                if (executeOutputFlags == ExecuteOutputFlags.Html)
+                    Html = dataTable.ToHTML();
+
+                if (executeOutputFlags == ExecuteOutputFlags.Json)
+                    Json = dataTable.ToContentJSON();
+
+                if (executeOutputFlags == ExecuteOutputFlags.Xml)
+                    Xml = dataTable.ToContentXML();
             }
-
         }
-
     }
 }

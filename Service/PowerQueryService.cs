@@ -17,11 +17,17 @@ namespace PowerQueryNet.Service
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class PowerQueryService : IPowerQueryService
     {
+        private static bool isRemote = false;
+
         public string MashupFromFile(string fileName)
         {
             try
             {
-                return Command.MashupFromFile(fileName);
+                string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()) + ".pbix";
+                File.Copy(fileName, tempFile);
+                string mashup = Command.MashupFromFile(tempFile);
+                File.Delete(tempFile);
+                return mashup;
             }
             catch (Exception ex)
             {
@@ -41,55 +47,63 @@ namespace PowerQueryNet.Service
                 Program.Log.WriteEntry(string.Format("MashupToQueries exception\nfileName : {0}\nException : {1}", fileName, ex.ToString()), EventLogEntryType.Error);
                 return null;
             }
+        }        
+
+        private static void OutputToSQL(ExecuteRequest executeRequest, DataTable dataTable)
+        {
+            using (SqlConnection connection = new SqlConnection(executeRequest.SqlConnectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    sqlCommand.Connection = connection;
+
+                    if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate)
+                    {
+                        sqlCommand.CommandText = $"IF OBJECT_ID('{dataTable}', 'U') IS NOT NULL DROP TABLE {dataTable}";
+                        sqlCommand.ExecuteNonQuery();
+                    }
+
+                    if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate || executeRequest.SqlTableAction == SqlTableAction.Create)
+                    {
+                        sqlCommand.CommandText = CreateTable(dataTable, executeRequest.SqlDecimalPrecision, executeRequest.SqlDecimalScale);
+                        sqlCommand.ExecuteNonQuery(); 
+                    }
+
+                    if (executeRequest.SqlTableAction == SqlTableAction.TruncateAndInsert)
+                    {
+                        sqlCommand.CommandText = $"TRUNCATE TABLE {dataTable}";
+                        sqlCommand.ExecuteNonQuery();
+                    }
+
+                    if (executeRequest.SqlTableAction == SqlTableAction.DeleteAndInsert)
+                    {
+                        sqlCommand.CommandText = $"DELETE FROM {dataTable}";
+                        sqlCommand.ExecuteNonQuery();
+                    }
+                }
+
+                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
+                {
+                    foreach (DataColumn c in dataTable.Columns)
+                        bulkCopy.ColumnMappings.Add(c.ColumnName, c.ColumnName);
+
+                    bulkCopy.DestinationTableName = dataTable.TableName;
+
+                    bulkCopy.WriteToServer(dataTable);
+                }
+            }
         }
 
-        //public string ExecuteToSQL(string connectionString, string queryName, Queries queries, Credentials credentials)        
-        //{
-        //    ExecuteResponse executeResponse = Execute(queryName, queries, credentials);
-
-        //    if (executeResponse.ExceptionMessage != null)
-        //        return executeResponse.ExceptionMessage;
-
-        //    try
-        //    {
-        //        using (SqlConnection connection = new SqlConnection(connectionString))
-        //        {
-        //            connection.Open();
-
-        //            using (SqlCommand sqlCommand = new SqlCommand())
-        //            {
-        //                sqlCommand.CommandText = CreateTable(executeResponse.DataTable);
-        //                sqlCommand.Connection = connection;
-        //                sqlCommand.ExecuteNonQuery();
-        //            }
-
-        //            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
-        //            {
-        //                foreach (DataColumn c in executeResponse.DataTable.Columns)
-        //                    bulkCopy.ColumnMappings.Add(c.ColumnName, c.ColumnName);
-
-        //                bulkCopy.DestinationTableName = executeResponse.DataTable.TableName;
-
-        //                bulkCopy.WriteToServer(executeResponse.DataTable);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return ex.Message;
-        //    }
-
-        //    return null;
-        //}
-
-        private static string CreateTable(DataTable table)
+        private static string CreateTable(DataTable table, int decimalPrecision, int decimalScale)
         {
             string tableName = table.TableName;
             string sqlsc;
-            sqlsc = "CREATE TABLE " + tableName + "(";
+            sqlsc = $"CREATE TABLE {tableName} (";
             for (int i = 0; i < table.Columns.Count; i++)
             {
-                sqlsc += "\n [" + table.Columns[i].ColumnName + "] ";
+                sqlsc += $"\n [{table.Columns[i].ColumnName}] ";
                 string columnType = table.Columns[i].DataType.ToString();
                 switch (columnType)
                 {
@@ -105,11 +119,14 @@ namespace PowerQueryNet.Service
                     case "System.Byte":
                         sqlsc += " tinyint";
                         break;
-                    case "System.Decimal":
-                        sqlsc += " decimal ";
-                        break;
                     case "System.DateTime":
                         sqlsc += " datetime ";
+                        break;
+                    case "System.Decimal":
+                        sqlsc += $" decimal ({decimalPrecision},{decimalScale})";
+                        break;
+                    case "System.Double":
+                        sqlsc += $" decimal ({decimalPrecision},{decimalScale})";
                         break;
                     case "System.String":
                     default:
@@ -117,7 +134,7 @@ namespace PowerQueryNet.Service
                         break;
                 }
                 if (table.Columns[i].AutoIncrement)
-                    sqlsc += " IDENTITY(" + table.Columns[i].AutoIncrementSeed.ToString() + "," + table.Columns[i].AutoIncrementStep.ToString() + ") ";
+                    sqlsc += $" IDENTITY({table.Columns[i].AutoIncrementSeed},{table.Columns[i].AutoIncrementStep}) ";
                 if (!table.Columns[i].AllowDBNull)
                     sqlsc += " NOT NULL ";
                 sqlsc += ",";
@@ -131,30 +148,37 @@ namespace PowerQueryNet.Service
             Command command = null;
             ExecuteResponse executeResponse = new ExecuteResponse();
             CommandCredentials commandCredentials = new CommandCredentials();
-            string mashup = "section Section1;\n\r";
+            string mashup;
             try
             {
-                if (executeRequest.Credentials != null)
+                if (executeRequest.Credentials != null && executeRequest.Credentials.Count > 0)
                 {
                     foreach (Credential credential in executeRequest.Credentials)
                     {
-                        if (credential is CredentialFile)
-                            commandCredentials.SetCredentialFile(((CredentialFile)credential).Path);
-                        else if (credential is CredentialWeb)
-                            commandCredentials.SetCredentialWeb(((CredentialWeb)credential).Url);
-                        else if (credential is CredentialSQL)
-                            commandCredentials.SetCredentialSQL(((CredentialSQL)credential).SQL);
+                        if (credential is CredentialFile credentialFile)
+                            commandCredentials.SetCredentialFile(credentialFile.Path);
+                        else if(credential is CredentialFolder credentialFolder)
+                            commandCredentials.SetCredentialFolder(credentialFolder.Path);
+                        else if (credential is CredentialWeb credentialWeb)
+                            commandCredentials.SetCredentialWeb(credentialWeb.Url);
+                        else if (credential is CredentialSQL credentialSQL)
+                            commandCredentials.SetCredentialSQL(credentialSQL.SQL, credentialSQL.Username, credentialSQL.Password);
                         else
                             throw new NotImplementedException("This Credential kind is not supported for now.");
                     }
-                }                    
+                }
 
                 command = new Command(commandCredentials);
 
                 DataTable dataTable = null;
-                
-                if (executeRequest.Queries != null)
+
+                if (executeRequest.Queries != null && executeRequest.Queries.Count > 0)
                 {
+                    if (executeRequest.Queries.Count == 1)
+                        executeRequest.QueryName = executeRequest.Queries[0].Name;
+                    
+                    mashup = "section Section1;\n\r";
+
                     foreach (Query q in executeRequest.Queries)
                     {
                         string name;
@@ -165,37 +189,104 @@ namespace PowerQueryNet.Service
                         mashup += string.Format("\n\rshared {0} = {1};", name, q.Formula);
                     }
                 }
+                else
+                    mashup = executeRequest.Mashup;
 
                 dataTable = command.Execute(executeRequest.QueryName, mashup);
 
-                if (executeRequest.ExecuteOutputFlags == 0)
+                if (executeRequest.ExecuteOutputFlags == 0 && executeRequest.SqlConnectionString != null)
+                    executeRequest.ExecuteOutputFlags = ExecuteOutputFlags.Sql;
+                else if (executeRequest.ExecuteOutputFlags == 0)
                     executeRequest.ExecuteOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml;
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
-                    executeResponse.DataTableXML = dataTable.ToXML();                    
-                
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Xml))
+                if (isRemote)
+                {
+                    executeResponse.DataTableFile = $"{executeRequest.TempPath}{Guid.NewGuid()}.xml";
+                    File.WriteAllText(executeResponse.DataTableFile, dataTable.ToXML()); 
+                }
+                else
+                {
+                    if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
+                        executeResponse.DataTable = dataTable;
+                }
+
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Csv) || !string.IsNullOrWhiteSpace(executeRequest.CsvFileName))
+                {
+                    executeResponse.Csv = dataTable.ToDelimitedFile(',', true);
+
+                    if (!string.IsNullOrWhiteSpace(executeRequest.CsvFileName))
+                        File.WriteAllText(executeRequest.CsvFileName, executeResponse.Csv);
+
+                    if (isRemote)
+                        executeResponse.Csv = null;
+                }
+
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Html) || !string.IsNullOrWhiteSpace(executeRequest.HtmlFileName))
+                {
+                    executeResponse.Html = dataTable.ToHTML();
+
+                    if (!string.IsNullOrWhiteSpace(executeRequest.HtmlFileName))
+                        File.WriteAllText(executeRequest.HtmlFileName, executeResponse.Html);
+
+                    if (isRemote)
+                        executeResponse.Html = null;
+                }
+
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Json) || !string.IsNullOrWhiteSpace(executeRequest.JsonFileName))
+                {
+                    executeResponse.Json = dataTable.ToContentJSON();
+
+                    if (!string.IsNullOrWhiteSpace(executeRequest.JsonFileName))
+                        File.WriteAllText(executeRequest.JsonFileName, executeResponse.Json);
+
+                    if (isRemote)
+                        executeResponse.Json = null;
+                }
+
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Sql))
+                {
+                    if (executeRequest.SqlConnectionString == null)
+                        throw new InvalidOperationException("Cannot output to SQL. SqlConnectionString must be defined.");
+
+                    dataTable.TableName = executeRequest.SqlTableName;
+
+                    OutputToSQL(executeRequest, dataTable);
+                }
+
+                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Xml) || !string.IsNullOrWhiteSpace(executeRequest.XmlFileName))
+                {
                     executeResponse.Xml = dataTable.ToContentXML();
+
+                    if (!string.IsNullOrWhiteSpace(executeRequest.XmlFileName))
+                        File.WriteAllText(executeRequest.XmlFileName, executeResponse.Xml);
+
+                    if (isRemote)
+                        executeResponse.Xml = null;
+                }
+
             }
             catch (Exception ex)
             {
                 Program.Log.WriteEntry(ex.ToString(), EventLogEntryType.Error);
-                Program.Log.WriteEntry(mashup, EventLogEntryType.Error);
-                if (executeRequest.Queries != null)
+                if (executeRequest.Queries != null && executeRequest.Queries.Count > 0)
                     Program.Log.WriteEntry(executeRequest.Queries.ToXML(), EventLogEntryType.Error);
-                if (executeRequest.Credentials != null)
-                    Program.Log.WriteEntry(executeRequest.Credentials.ToXML(), EventLogEntryType.Error);                
+                if (executeRequest.Mashup != null)
+                    Program.Log.WriteEntry(executeRequest.Mashup, EventLogEntryType.Error);
+                if (executeRequest.Credentials != null && executeRequest.Credentials.Count > 0)
+                    Program.Log.WriteEntry(executeRequest.Credentials.ToXML(), EventLogEntryType.Error);
                 executeResponse.ExceptionMessage = ex.Message;
             }
             finally
             {
                 if (command != null)
+                {
                     command.Dispose();
+                }
             }
 
             return executeResponse;
         }
-        
+
         internal static void Start()
         {
             TimeSpan ipcTimeout;
@@ -213,8 +304,13 @@ namespace PowerQueryNet.Service
             binding.ReceiveTimeout = ipcTimeout;
             binding.OpenTimeout = ipcTimeout;
             binding.CloseTimeout = ipcTimeout;
+            binding.MaxBufferPoolSize = 2147483647;
+            binding.MaxBufferPoolSize = 2147483647;
+            binding.MaxReceivedMessageSize = 2147483647;
             serviceHost.AddServiceEndpoint(typeof(IPowerQueryService), binding, ipcAddress);
             serviceHost.Open();
+
+            isRemote = true;
         }
     }
 }
