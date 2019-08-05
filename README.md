@@ -1,5 +1,5 @@
 # PowerQueryNet
-Run Power Query M formula language from .NET (C#)
+Run Power Query M formula language from anywhere.
 
 ## About
 PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (aka Get & Transform) from any .NET application.
@@ -14,15 +14,29 @@ Dependency: [PowerQuerySdk.vsix 1.0.0.16](http://dakahn.gallery.vsassets.io/_api
 
 Samples: [PowerQueryNet.Samples.zip](../../releases/download/v1.0.3/PowerQueryNet.Samples.zip)
 
-## Hello, World!
+## Hello, World! - Command line interface
 
-1. Install `PowerQueryNet.msi`
-2. From your .NET project, add a reference to `PowerQueryNet.Client`
-3. Run the following:
+1. Create a new file with the following content:
 ```txt
-var q = new Query { Formula = "let hw = \"Hello World\" in hw" };
-var pq = new PowerQueryCommand();
-var result = pq.Execute(q);
+let Source = "Hello, World!" in Source
+```
+2. Save the file as helloworld.pq
+3. Run the following in the Command Prompt:
+```txt
+pqnet helloworld.pq
+```
+
+## Hello, World! - .NET (C#)
+
+1. From your .NET project, add a reference to `PowerQueryNet.Client`
+2. Run the following:
+```txt
+var qry = new Query { Formula = "let hw = \"Hello World\" in hw" };
+var req = new ExecuteRequest();
+req.Queries.Add(qry);
+req.ExecuteOutputFlags = ExecuteOutputFlags.DataTable;
+var pqc = new PowerQueryCommand();            
+var result = pqc.Execute(req);
 DataTable dt = result.DataTable;
 ```
 ## Power Query App
@@ -37,6 +51,6 @@ To build the Setup project, [WiX Toolset](http://wixtoolset.org/releases/) must 
 
 ## Copyright
 
-Copyright 2018
+Copyright 2019
 
 Licensed under the [MIT License](LICENSE)
