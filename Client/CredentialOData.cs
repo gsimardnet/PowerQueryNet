@@ -15,5 +15,15 @@ namespace PowerQueryNet.Client
         /// URL address of the resource
         /// </summary>
         public string Url { get; set; }
+
+        /// <summary>
+        /// Username value
+        /// </summary>
+        public string Username { get; set; }
+
+        /// <summary>
+        /// Password value
+        /// </summary>
+        public string Password { get; set; }
     }
 }

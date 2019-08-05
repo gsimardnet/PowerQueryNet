@@ -265,3 +265,4 @@ __pycache__/
 /Engine/lib/Microsoft.Mashup.OAuth.dll
 /Engine/lib/Microsoft.Data.Mashup.dll
 /Engine/lib/Microsoft.ApplicationInsights.dll
+/.doc

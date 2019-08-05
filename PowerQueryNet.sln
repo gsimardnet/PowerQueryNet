@@ -13,6 +13,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixpro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup.Actions", "Setup.Actions\Setup.Actions.csproj", "{C4521615-F8A1-4021-90C4-A2B85EB09703}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PQNet", "PQNet\PQNet.csproj", "{91D3B517-685E-4806-A17F-5589CFF21E29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,14 @@ Global
 		{C4521615-F8A1-4021-90C4-A2B85EB09703}.Release|Any CPU.ActiveCfg = Release|x86
 		{C4521615-F8A1-4021-90C4-A2B85EB09703}.Release|x86.ActiveCfg = Release|x86
 		{C4521615-F8A1-4021-90C4-A2B85EB09703}.Release|x86.Build.0 = Release|x86
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Debug|x86.Build.0 = Debug|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Release|x86.ActiveCfg = Release|Any CPU
+		{91D3B517-685E-4806-A17F-5589CFF21E29}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
