@@ -144,6 +144,8 @@ namespace PowerQueryNet.Service
                             commandCredentials.SetCredentialWeb(((CredentialWeb)credential).Url);
                         else if (credential is CredentialSQL)
                             commandCredentials.SetCredentialSQL(((CredentialSQL)credential).SQL);
+                        else if (credential is CredentialOData)
+                            commandCredentials.SetCredentialOData(((CredentialOData)credential).Url);
                         else
                             throw new NotImplementedException("This Credential kind is not supported for now.");
                     }
