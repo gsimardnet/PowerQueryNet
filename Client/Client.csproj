@@ -59,6 +59,7 @@
     <Compile Include="Credential.cs" />
     <Compile Include="CredentialFolder.cs" />
     <Compile Include="CredentialSQL.cs" />
+    <Compile Include="CredentialOData.cs" />
     <Compile Include="CredentialWeb.cs" />
     <Compile Include="CredentialFile.cs" />
     <Compile Include="Credentials.cs" />

@@ -64,7 +64,17 @@ namespace PowerQueryNet.Engine
 
             return;
         }
-        
+
+        public void SetCredentialOData(string url)
+        {
+            DataSource dataSource = new DataSource("OData", url);
+            DataSourceSetting dataSourceSetting = new DataSourceSetting("Anonymous");
+
+            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+
+            return;
+        }
+
         public bool LoadCredentials(string fileName)
         {
             try

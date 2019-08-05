@@ -19,6 +19,8 @@ namespace PowerQueryNet.Client
     [KnownType(typeof(CredentialWeb))]
     [XmlInclude(typeof(CredentialSQL))]
     [KnownType(typeof(CredentialSQL))]
+    [XmlInclude(typeof(CredentialOData))]
+    [KnownType(typeof(CredentialOData))]
     public abstract class Credential
     {
 
