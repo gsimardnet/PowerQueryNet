@@ -2,7 +2,7 @@
 Run Power Query M formula language from anywhere.
 
 ## About
-PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (aka Get & Transform) from any .NET application.
+PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (aka Get & Transform) from the Command Prompt or any .NET application.
 
 ## Download
 
