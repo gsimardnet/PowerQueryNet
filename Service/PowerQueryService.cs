@@ -51,6 +51,8 @@ namespace PowerQueryNet.Service
 
         private static void OutputToSQL(ExecuteRequest executeRequest, DataTable dataTable)
         {
+            string tableName;
+
             using (SqlConnection connection = new SqlConnection(executeRequest.SqlConnectionString))
             {
                 connection.Open();
@@ -59,27 +61,56 @@ namespace PowerQueryNet.Service
                 {
                     sqlCommand.Connection = connection;
 
+                    var dt = new DataTable();
+                    using (SqlDataAdapter da = new SqlDataAdapter(sqlCommand))
+                    {
+                        sqlCommand.CommandText = $@"                            
+                            DECLARE @ObjectName sysname
+                            DECLARE @SchemaName sysname
+
+                            IF PARSENAME(@TableName, 1) IS NULL
+                            OR PARSENAME(@TableName, 3) IS NOT NULL
+                            OR PARSENAME(@TableName, 4) IS NOT NULL
+                            BEGIN
+	                            ;THROW 50000, 'Table name cannot include server name or database name. Use the connection string instead.', 1
+                            END
+
+                            SET @ObjectName = PARSENAME(@TableName, 1)
+                            SET @SchemaName = PARSENAME(@TableName, 2)
+
+                            SELECT SchemaName = isnull(@SchemaName, ''), ObjectName = isnull(@ObjectName, '')
+                        ";
+                        var sqlParameter = new SqlParameter("TableName", SqlDbType.NVarChar, 128);
+                        sqlParameter.Value = dataTable.TableName;
+                        sqlCommand.Parameters.Add(sqlParameter);
+                        da.Fill(dt);
+                        sqlCommand.Parameters.Clear();
+                        string schemaName = dt.Rows[0][0].ToString();
+                        string objectName = dt.Rows[0][1].ToString();
+                        tableName = schemaName == "" ? $"[{objectName}]" : $"[{schemaName}].[{objectName}]";
+                    }
+
                     if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate)
                     {
-                        sqlCommand.CommandText = $"IF OBJECT_ID('{dataTable}', 'U') IS NOT NULL DROP TABLE {dataTable}";
+                        sqlCommand.CommandText = $"IF OBJECT_ID('{tableName}', 'U') IS NOT NULL DROP TABLE {tableName}";
                         sqlCommand.ExecuteNonQuery();
                     }
 
                     if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate || executeRequest.SqlTableAction == SqlTableAction.Create)
                     {
-                        sqlCommand.CommandText = CreateTable(dataTable, executeRequest.SqlDecimalPrecision, executeRequest.SqlDecimalScale);
+                        sqlCommand.CommandText = CreateTable(tableName, dataTable, executeRequest.SqlDecimalPrecision, executeRequest.SqlDecimalScale);
                         sqlCommand.ExecuteNonQuery(); 
                     }
 
                     if (executeRequest.SqlTableAction == SqlTableAction.TruncateAndInsert)
                     {
-                        sqlCommand.CommandText = $"TRUNCATE TABLE {dataTable}";
+                        sqlCommand.CommandText = $"TRUNCATE TABLE {tableName}";
                         sqlCommand.ExecuteNonQuery();
                     }
 
                     if (executeRequest.SqlTableAction == SqlTableAction.DeleteAndInsert)
                     {
-                        sqlCommand.CommandText = $"DELETE FROM {dataTable}";
+                        sqlCommand.CommandText = $"DELETE FROM {tableName}";
                         sqlCommand.ExecuteNonQuery();
                     }
                 }
@@ -89,16 +120,15 @@ namespace PowerQueryNet.Service
                     foreach (DataColumn c in dataTable.Columns)
                         bulkCopy.ColumnMappings.Add(c.ColumnName, c.ColumnName);
 
-                    bulkCopy.DestinationTableName = dataTable.TableName;
+                    bulkCopy.DestinationTableName = tableName;
 
                     bulkCopy.WriteToServer(dataTable);
                 }
             }
         }
 
-        private static string CreateTable(DataTable table, int decimalPrecision, int decimalScale)
+        private static string CreateTable(string tableName, DataTable table, int decimalPrecision, int decimalScale)
         {
-            string tableName = table.TableName;
             string sqlsc;
             sqlsc = $"CREATE TABLE {tableName} (";
             for (int i = 0; i < table.Columns.Count; i++)
