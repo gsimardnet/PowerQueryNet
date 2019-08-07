@@ -32,12 +32,8 @@ pqnet helloworld.pq
 2. Run the following:
 ```txt
 var qry = new Query { Formula = "let hw = \"Hello World\" in hw" };
-var req = new ExecuteRequest();
-req.Queries.Add(qry);
-req.ExecuteOutputFlags = ExecuteOutputFlags.DataTable;
-var pqc = new PowerQueryCommand();            
-var result = pqc.Execute(req);
-DataTable dt = result.DataTable;
+var pqc = new PowerQueryCommand() { ExecuteOutputFlags = ExecuteOutputFlags.Csv };
+var result = pqc.Execute(qry);
 ```
 ## Power Query App
 Run queries in a standalone application
