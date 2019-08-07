@@ -12,6 +12,11 @@ namespace PowerQueryNet.Client
     public enum SqlTableAction
     {
         /// <summary>
+        /// Undefined
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
         /// Create a new table and insert the rows
         /// </summary>
         Create = 1,
