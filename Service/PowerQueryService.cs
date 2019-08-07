@@ -49,11 +49,11 @@ namespace PowerQueryNet.Service
             }
         }        
 
-        private static void OutputToSQL(ExecuteRequest executeRequest, DataTable dataTable)
+        private static void OutputToSQL(PowerQueryCommand powerQueryCommand, DataTable dataTable)
         {
             string tableName;
 
-            using (SqlConnection connection = new SqlConnection(executeRequest.SqlConnectionString))
+            using (SqlConnection connection = new SqlConnection(powerQueryCommand.SqlConnectionString))
             {
                 connection.Open();
 
@@ -90,25 +90,25 @@ namespace PowerQueryNet.Service
                         tableName = schemaName == "" ? $"[{objectName}]" : $"[{schemaName}].[{objectName}]";
                     }
 
-                    if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate)
+                    if (powerQueryCommand.SqlTableAction == SqlTableAction.DropAndCreate)
                     {
                         sqlCommand.CommandText = $"IF OBJECT_ID('{tableName}', 'U') IS NOT NULL DROP TABLE {tableName}";
                         sqlCommand.ExecuteNonQuery();
                     }
 
-                    if (executeRequest.SqlTableAction == SqlTableAction.DropAndCreate || executeRequest.SqlTableAction == SqlTableAction.Create)
+                    if (powerQueryCommand.SqlTableAction == SqlTableAction.DropAndCreate || powerQueryCommand.SqlTableAction == SqlTableAction.Create)
                     {
-                        sqlCommand.CommandText = CreateTable(tableName, dataTable, executeRequest.SqlDecimalPrecision, executeRequest.SqlDecimalScale);
+                        sqlCommand.CommandText = CreateTable(tableName, dataTable, powerQueryCommand.SqlDecimalPrecision, powerQueryCommand.SqlDecimalScale);
                         sqlCommand.ExecuteNonQuery(); 
                     }
 
-                    if (executeRequest.SqlTableAction == SqlTableAction.TruncateAndInsert)
+                    if (powerQueryCommand.SqlTableAction == SqlTableAction.TruncateAndInsert)
                     {
                         sqlCommand.CommandText = $"TRUNCATE TABLE {tableName}";
                         sqlCommand.ExecuteNonQuery();
                     }
 
-                    if (executeRequest.SqlTableAction == SqlTableAction.DeleteAndInsert)
+                    if (powerQueryCommand.SqlTableAction == SqlTableAction.DeleteAndInsert)
                     {
                         sqlCommand.CommandText = $"DELETE FROM {tableName}";
                         sqlCommand.ExecuteNonQuery();
@@ -172,18 +172,17 @@ namespace PowerQueryNet.Service
             return sqlsc.Substring(0, sqlsc.Length - 1) + "\n)";
         }
 
-        //public ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials, ExecuteOutputFlags executeOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml)
-        public ExecuteResponse Execute(ExecuteRequest executeRequest)
+        public PowerQueryResponse Execute(PowerQueryCommand powerQueryCommand)
         {
             Command command = null;
-            ExecuteResponse executeResponse = new ExecuteResponse();
+            PowerQueryResponse powerQueryResponse = new PowerQueryResponse();
             CommandCredentials commandCredentials = new CommandCredentials();
             string mashup;
             try
             {
-                if (executeRequest.Credentials != null && executeRequest.Credentials.Count > 0)
+                if (powerQueryCommand.Credentials != null && powerQueryCommand.Credentials.Count > 0)
                 {
-                    foreach (Credential credential in executeRequest.Credentials)
+                    foreach (Credential credential in powerQueryCommand.Credentials)
                     {
                         if (credential is CredentialFile credentialFile)
                             commandCredentials.SetCredentialFile(credentialFile.Path);
@@ -204,14 +203,14 @@ namespace PowerQueryNet.Service
 
                 DataTable dataTable = null;
 
-                if (executeRequest.Queries != null && executeRequest.Queries.Count > 0)
+                if (powerQueryCommand.Queries != null && powerQueryCommand.Queries.Count > 0)
                 {
-                    if (executeRequest.Queries.Count == 1)
-                        executeRequest.QueryName = executeRequest.Queries[0].Name;
+                    if (powerQueryCommand.Queries.Count == 1)
+                        powerQueryCommand.QueryName = powerQueryCommand.Queries[0].Name;
                     
                     mashup = "section Section1;\n\r";
 
-                    foreach (Query q in executeRequest.Queries)
+                    foreach (Query q in powerQueryCommand.Queries)
                     {
                         string name;
                         if (q.Name.Contains(" "))
@@ -222,91 +221,91 @@ namespace PowerQueryNet.Service
                     }
                 }
                 else
-                    mashup = executeRequest.Mashup;
+                    mashup = powerQueryCommand.Mashup;
 
-                dataTable = command.Execute(executeRequest.QueryName, mashup);
+                dataTable = command.Execute(powerQueryCommand.QueryName, mashup);
 
-                if (executeRequest.ExecuteOutputFlags == 0 && executeRequest.SqlConnectionString != null)
-                    executeRequest.ExecuteOutputFlags = ExecuteOutputFlags.Sql;
-                else if (executeRequest.ExecuteOutputFlags == 0)
-                    executeRequest.ExecuteOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml;
+                if (powerQueryCommand.ExecuteOutputFlags == 0 && powerQueryCommand.SqlConnectionString != null)
+                    powerQueryCommand.ExecuteOutputFlags = ExecuteOutputFlags.Sql;
+                else if (powerQueryCommand.ExecuteOutputFlags == 0)
+                    powerQueryCommand.ExecuteOutputFlags = ExecuteOutputFlags.DataTable | ExecuteOutputFlags.Xml;
 
                 if (isRemote)
                 {
-                    executeResponse.DataTableFile = $"{executeRequest.TempPath}{Guid.NewGuid()}.xml";
-                    File.WriteAllText(executeResponse.DataTableFile, dataTable.ToXML()); 
+                    powerQueryResponse.DataTableFile = $"{powerQueryCommand.TempPath}{Guid.NewGuid()}.xml";
+                    File.WriteAllText(powerQueryResponse.DataTableFile, dataTable.ToXML()); 
                 }
                 else
                 {
-                    if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
-                        executeResponse.DataTable = dataTable;
+                    if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
+                        powerQueryResponse.DataTable = dataTable;
                 }
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Csv) || !string.IsNullOrWhiteSpace(executeRequest.CsvFileName))
+                if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Csv) || !string.IsNullOrWhiteSpace(powerQueryCommand.CsvFileName))
                 {
-                    executeResponse.Csv = dataTable.ToDelimitedFile(',', true);
+                    powerQueryResponse.Csv = dataTable.ToDelimitedFile(',', true);
 
-                    if (!string.IsNullOrWhiteSpace(executeRequest.CsvFileName))
-                        File.WriteAllText(executeRequest.CsvFileName, executeResponse.Csv);
+                    if (!string.IsNullOrWhiteSpace(powerQueryCommand.CsvFileName))
+                        File.WriteAllText(powerQueryCommand.CsvFileName, powerQueryResponse.Csv);
 
                     if (isRemote)
-                        executeResponse.Csv = null;
+                        powerQueryResponse.Csv = null;
                 }
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Html) || !string.IsNullOrWhiteSpace(executeRequest.HtmlFileName))
+                if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Html) || !string.IsNullOrWhiteSpace(powerQueryCommand.HtmlFileName))
                 {
-                    executeResponse.Html = dataTable.ToHTML();
+                    powerQueryResponse.Html = dataTable.ToHTML();
 
-                    if (!string.IsNullOrWhiteSpace(executeRequest.HtmlFileName))
-                        File.WriteAllText(executeRequest.HtmlFileName, executeResponse.Html);
+                    if (!string.IsNullOrWhiteSpace(powerQueryCommand.HtmlFileName))
+                        File.WriteAllText(powerQueryCommand.HtmlFileName, powerQueryResponse.Html);
 
                     if (isRemote)
-                        executeResponse.Html = null;
+                        powerQueryResponse.Html = null;
                 }
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Json) || !string.IsNullOrWhiteSpace(executeRequest.JsonFileName))
+                if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Json) || !string.IsNullOrWhiteSpace(powerQueryCommand.JsonFileName))
                 {
-                    executeResponse.Json = dataTable.ToContentJSON();
+                    powerQueryResponse.Json = dataTable.ToContentJSON();
 
-                    if (!string.IsNullOrWhiteSpace(executeRequest.JsonFileName))
-                        File.WriteAllText(executeRequest.JsonFileName, executeResponse.Json);
+                    if (!string.IsNullOrWhiteSpace(powerQueryCommand.JsonFileName))
+                        File.WriteAllText(powerQueryCommand.JsonFileName, powerQueryResponse.Json);
 
                     if (isRemote)
-                        executeResponse.Json = null;
+                        powerQueryResponse.Json = null;
                 }
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Sql))
+                if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Sql))
                 {
-                    if (executeRequest.SqlConnectionString == null)
+                    if (powerQueryCommand.SqlConnectionString == null)
                         throw new InvalidOperationException("Cannot output to SQL. SqlConnectionString must be defined.");
 
-                    dataTable.TableName = executeRequest.SqlTableName;
+                    dataTable.TableName = powerQueryCommand.SqlTableName;
 
-                    OutputToSQL(executeRequest, dataTable);
+                    OutputToSQL(powerQueryCommand, dataTable);
                 }
 
-                if (executeRequest.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Xml) || !string.IsNullOrWhiteSpace(executeRequest.XmlFileName))
+                if (powerQueryCommand.ExecuteOutputFlags.HasFlag(ExecuteOutputFlags.Xml) || !string.IsNullOrWhiteSpace(powerQueryCommand.XmlFileName))
                 {
-                    executeResponse.Xml = dataTable.ToContentXML();
+                    powerQueryResponse.Xml = dataTable.ToContentXML();
 
-                    if (!string.IsNullOrWhiteSpace(executeRequest.XmlFileName))
-                        File.WriteAllText(executeRequest.XmlFileName, executeResponse.Xml);
+                    if (!string.IsNullOrWhiteSpace(powerQueryCommand.XmlFileName))
+                        File.WriteAllText(powerQueryCommand.XmlFileName, powerQueryResponse.Xml);
 
                     if (isRemote)
-                        executeResponse.Xml = null;
+                        powerQueryResponse.Xml = null;
                 }
 
             }
             catch (Exception ex)
             {
                 Program.Log.WriteEntry(ex.ToString(), EventLogEntryType.Error);
-                if (executeRequest.Queries != null && executeRequest.Queries.Count > 0)
-                    Program.Log.WriteEntry(executeRequest.Queries.ToXML(), EventLogEntryType.Error);
-                if (executeRequest.Mashup != null)
-                    Program.Log.WriteEntry(executeRequest.Mashup, EventLogEntryType.Error);
-                if (executeRequest.Credentials != null && executeRequest.Credentials.Count > 0)
-                    Program.Log.WriteEntry(executeRequest.Credentials.ToXML(), EventLogEntryType.Error);
-                executeResponse.ExceptionMessage = ex.Message;
+                if (powerQueryCommand.Queries != null && powerQueryCommand.Queries.Count > 0)
+                    Program.Log.WriteEntry(powerQueryCommand.Queries.ToXML(), EventLogEntryType.Error);
+                if (powerQueryCommand.Mashup != null)
+                    Program.Log.WriteEntry(powerQueryCommand.Mashup, EventLogEntryType.Error);
+                if (powerQueryCommand.Credentials != null && powerQueryCommand.Credentials.Count > 0)
+                    Program.Log.WriteEntry(powerQueryCommand.Credentials.ToXML(), EventLogEntryType.Error);
+                powerQueryResponse.ExceptionMessage = ex.Message;
             }
             finally
             {
@@ -316,14 +315,13 @@ namespace PowerQueryNet.Service
                 }
             }
 
-            return executeResponse;
+            return powerQueryResponse;
         }
 
         internal static void Start()
         {
             TimeSpan ipcTimeout;
             string ipcAddress;
-            //using (var keyBP = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
             using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\PowerQueryNet"))
             {
                 ipcTimeout = TimeSpan.Parse(keyPQ.GetValue("IpcTimeout").ToString());

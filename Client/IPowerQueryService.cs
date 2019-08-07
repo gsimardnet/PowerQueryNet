@@ -17,11 +17,10 @@ namespace PowerQueryNet.Client
         /// <summary>
         /// Execute the specified query.
         /// </summary>
-        /// <param name="executeRequest">Inputs for the method</param>
+        /// <param name="powerQueryCommand">Inputs for the method</param>
         /// <returns></returns>
         [OperationContract]
-        //ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials);
-        ExecuteResponse Execute(ExecuteRequest executeRequest);
+        PowerQueryResponse Execute(PowerQueryCommand powerQueryCommand);
 
         /// <summary>
         /// Get the mashup (queries) from an Excel or Power BI file.

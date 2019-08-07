@@ -73,37 +73,74 @@ namespace PowerQueryNet.Client
         public Credentials Credentials { get; set; }
 
         /// <summary>
-        /// Collection of instances of Parameter in the Power Query (M) formulas.
+        /// Name of the query to execute.
         /// </summary>
-        //public Parameters Parameters { get; set; }
+        public string QueryName { get; set; }
 
         /// <summary>
-        /// Execute the specified ExecuteRequest.
+        /// Specifies the outputs that will be generated in memory after the execution of the query.
         /// </summary>
-        /// <param name="executeRequest">ExecuteRequest to execute</param>
-        /// <returns></returns>
-        public ExecuteResponse Execute(ExecuteRequest executeRequest)
-        {
-            if (executeRequest.Credentials == null || executeRequest.Credentials.Count == 0)
-                executeRequest.Credentials = this.Credentials;
+        public ExecuteOutputFlags ExecuteOutputFlags { get; set; } = ExecuteOutputFlags.DataTable;
 
-            if (executeRequest.Mashup == null)
-                executeRequest.Mashup = this.Mashup;
+        /// <summary>
+        /// Full path of the CSV file that will be generated after the execution of the query.
+        /// </summary>
+        public string CsvFileName { get; set; }
 
-            if (executeRequest.Queries == null || executeRequest.Queries.Count == 0)
-                executeRequest.Queries = this.Queries;
+        /// <summary>
+        /// Full path of the HTML file that will be generated after the execution of the query.
+        /// </summary>
+        public string HtmlFileName { get; set; }
 
-            return ExecuteMethod("Execute", executeRequest);
-        }
+        /// <summary>
+        /// Full path of the JSON file that will be generated after the execution of the query.
+        /// </summary>
+        public string JsonFileName { get; set; }
+
+        /// <summary>
+        /// Full path of the XML file that will be generated after the execution of the query.
+        /// </summary>
+        public string XmlFileName { get; set; }
+
+        /// <summary>
+        /// Connection string to the SQL Server and Database where the Table will be generated after the execution of the query.
+        /// </summary>
+        public string SqlConnectionString { get; set; }
+
+        /// <summary>
+        /// For SQL decimal data type, the maximum total number of decimal digits to be stored.
+        /// </summary>
+        public int SqlDecimalPrecision { get; set; }
+
+        /// <summary>
+        /// For SQL decimal data type, the number of decimal digits that are stored to the right of the decimal point.
+        /// </summary>
+        public int SqlDecimalScale { get; set; }
+
+        /// <summary>
+        /// When SqlConnectionString is not null, name of the SQL Table that will be generated after the execution of the query. If this property is null, the default name will correspond to the QueryName.
+        /// </summary>
+        public string SqlTableName { get; set; }
+
+        /// <summary>
+        /// Action taken when SqlConnectionString and SqlTableName are not null
+        /// </summary>
+        public SqlTableAction SqlTableAction { get; set; }
+
+        /// <summary>
+        /// Path of the folder to create temporary files.
+        /// </summary>
+        public string TempPath { get; set; }
 
         /// <summary>
         /// Execute the specified query.
         /// </summary>
         /// <param name="queryName">Name of the query to execute</param>
         /// <returns></returns>
-        public ExecuteResponse Execute(string queryName)
+        public PowerQueryResponse Execute(string queryName)
         {
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
+            QueryName = queryName;
+            return ExecuteMethod("Execute", this);
         }
 
         /// <summary>
@@ -111,12 +148,12 @@ namespace PowerQueryNet.Client
         /// </summary>
         /// <param name="query">Query object to execute</param>
         /// <returns></returns>
-        public ExecuteResponse Execute(Query query)
+        public PowerQueryResponse Execute(Query query)
         {
             if (Queries[query.Name] == null)
                 Queries.Add(query);
 
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = query.Name, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
+            return ExecuteMethod("Execute", this);
         }
 
         /// <summary>
@@ -126,10 +163,16 @@ namespace PowerQueryNet.Client
         /// <param name="queries">Collection of instances of Query to execute Power Query (M) formulas.</param>
         /// <param name="credentials">Collection of instances of Credential to access one or many ressources from the Power Query (M) formulas.</param>
         /// <returns></returns>
-        public static ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials = null)
+        public static PowerQueryResponse Execute(string queryName, Queries queries, Credentials credentials = null)
         {
             //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = queries, Credentials = credentials, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
+            var c = new PowerQueryCommand()
+            {
+                QueryName = queryName,
+                Queries = queries,
+                Credentials = credentials,
+            };
+            return ExecuteMethod("Execute", c);
         }
 
         /// <summary>
@@ -139,10 +182,16 @@ namespace PowerQueryNet.Client
         /// <param name="mashup">Mashup (queries) from which the query will be executed</param>
         /// <param name="credentials">Collection of instances of Credential to access one or many ressources from the Power Query (M) formulas.</param>
         /// <returns></returns>
-        public static ExecuteResponse Execute(string queryName, string mashup, Credentials credentials = null)
+        public static PowerQueryResponse Execute(string queryName, string mashup, Credentials credentials = null)
         {
             //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Mashup = mashup, Credentials = credentials, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
+            var c = new PowerQueryCommand()
+            {
+                QueryName = queryName,
+                Mashup = mashup,
+                Credentials = credentials,
+            };
+            return ExecuteMethod("Execute", c);
         }
 
         /// <summary>
@@ -161,7 +210,6 @@ namespace PowerQueryNet.Client
 
             TimeSpan ipcTimeout;
             string ipcAddress;
-            //using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\PowerQueryNet"))
             using (var keyPQ = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\PowerQueryNet"))
             {
                 if (keyPQ == null)
@@ -185,10 +233,11 @@ namespace PowerQueryNet.Client
 
             if (method == "Execute")
             {
-                var executeRequest = (ExecuteRequest)obj[0];
-                executeRequest.TempPath = System.IO.Path.GetTempPath();
-                var executeResponse = powerQueryService.Execute(executeRequest);
-                executeResponse.LoadReturnValues(executeRequest.ExecuteOutputFlags);
+                var powerQueryCommand = (PowerQueryCommand)obj[0];
+                powerQueryCommand.TempPath = System.IO.Path.GetTempPath();
+                var executeResponse = powerQueryService.Execute(powerQueryCommand);
+                executeResponse.LoadReturnValues(powerQueryCommand.ExecuteOutputFlags);
+
                 return executeResponse;
             }                
             else if (method == "MashupFromFile")

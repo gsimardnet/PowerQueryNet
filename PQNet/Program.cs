@@ -58,11 +58,12 @@ namespace PowerQueryNet.PQNet
                     if (!string.IsNullOrWhiteSpace(a.OutputFile))
                         File.WriteAllText(a.OutputFile, "");
 
-                    ExecuteRequest request = LoadRequest(a);
+                    //ExecuteRequest request = LoadRequest(a);
+                    PowerQueryCommand powerQueryCommand = LoadCommand(a);
 
-                    ExecuteResponse response = powerQueryService.Execute(request);
+                    PowerQueryResponse powerQueryResponse = powerQueryService.Execute(powerQueryCommand);
 
-                    OutputResponse(a, response);
+                    OutputResponse(a, powerQueryResponse);
                 }
                 exitCode = 0;
             }
@@ -74,63 +75,63 @@ namespace PowerQueryNet.PQNet
             Environment.Exit(exitCode);
         }
 
-        private static void OutputResponse(Arguments a, ExecuteResponse response)
+        private static void OutputResponse(Arguments a, PowerQueryResponse powerQueryResponse)
         {
-            if (response.ExceptionMessage != null)
-                throw new Exception($"{response.ExceptionMessage}");
+            if (powerQueryResponse.ExceptionMessage != null)
+                throw new Exception($"{powerQueryResponse.ExceptionMessage}");
 
             if (string.IsNullOrWhiteSpace(a.OutputFile))
             {
                 switch (a.OutputFlags)
                 {
                     case ExecuteOutputFlags.Csv:
-                        Console.WriteLine(response.Csv);
+                        Console.WriteLine(powerQueryResponse.Csv);
                         break;
                     case ExecuteOutputFlags.Html:
-                        Console.WriteLine(response.Html);
+                        Console.WriteLine(powerQueryResponse.Html);
                         break;
                     case ExecuteOutputFlags.Json:
-                        Console.WriteLine(response.Json);
+                        Console.WriteLine(powerQueryResponse.Json);
                         break;
                     case ExecuteOutputFlags.Xml:
-                        Console.WriteLine(response.Xml);
+                        Console.WriteLine(powerQueryResponse.Xml);
                         break;
                     default:
                         break;
                 }
             }
 
-            if (response.DataTable != null && a.OutputToWindow)
-                new WindowGrid(response.DataTable).ShowDialog();
+            if (powerQueryResponse.DataTable != null && a.OutputToWindow)
+                new WindowGrid(powerQueryResponse.DataTable).ShowDialog();
         }
 
-        private static ExecuteRequest LoadRequest(Arguments a)
+        private static PowerQueryCommand LoadCommand(Arguments a)
         {
-            var r = new ExecuteRequest()
+            var c = new PowerQueryCommand()
             {
                 QueryName = a.QueryName,
             };
 
             if (!string.IsNullOrWhiteSpace(a.CredentialsFile))
-                r.Credentials = Credentials.LoadFromFile(a.CredentialsFile);
+                c.Credentials = Credentials.LoadFromFile(a.CredentialsFile);
 
             if (!string.IsNullOrWhiteSpace(a.OutputFile))
             {
                 switch (a.OutputFlags)
                 {
                     case ExecuteOutputFlags.Csv:
-                        r.CsvFileName = a.OutputFile;
+                        c.CsvFileName = a.OutputFile;
                         break;
                     //case ExecuteOutputFlags.DataTable:
                     //    break;
                     case ExecuteOutputFlags.Html:
-                        r.HtmlFileName = a.OutputFile;
+                        c.HtmlFileName = a.OutputFile;
                         break;
                     case ExecuteOutputFlags.Json:
-                        r.JsonFileName = a.OutputFile;
+                        c.JsonFileName = a.OutputFile;
                         break;
                     case ExecuteOutputFlags.Xml:
-                        r.XmlFileName = a.OutputFile;
+                        c.XmlFileName = a.OutputFile;
                         break;
                     default:
                         break;
@@ -139,18 +140,18 @@ namespace PowerQueryNet.PQNet
 
             if (!string.IsNullOrWhiteSpace(a.SqlConnectionString))
             {
-                r.SqlConnectionString = a.SqlConnectionString;
-                r.SqlTableName = a.TableName;
-                r.SqlTableAction = a.SqlTableAction;
-                r.SqlDecimalPrecision = 18;
-                r.SqlDecimalScale = 2;
+                c.SqlConnectionString = a.SqlConnectionString;
+                c.SqlTableName = a.TableName;
+                c.SqlTableAction = a.SqlTableAction;
+                c.SqlDecimalPrecision = 18;
+                c.SqlDecimalScale = 2;
             }
 
             if (string.IsNullOrWhiteSpace(a.SourceFileExtension))
-                r.Queries = Queries.LoadFromFolder(a.Source);
+                c.Queries = Queries.LoadFromFolder(a.Source);
 
             if (a.SourceFileExtension == ".pq")
-                r.Queries.AddFromFile(a.Source);
+                c.Queries.AddFromFile(a.Source);
 
             if (a.SourceFileExtension == ".xlsx"
              || a.SourceFileExtension == ".xlsm"
@@ -158,16 +159,16 @@ namespace PowerQueryNet.PQNet
              || a.SourceFileExtension == ".pbit"
             )
             {
-                r.Mashup = powerQueryService.MashupFromFile(a.Source);
+                c.Mashup = powerQueryService.MashupFromFile(a.Source);
                 //req.Queries = powerQueryService.MashupToQueries(source);
             }
 
-            r.ExecuteOutputFlags = a.OutputFlags.Value;
+            c.ExecuteOutputFlags = a.OutputFlags.Value;
 
             if (a.OutputToWindow)
-                r.ExecuteOutputFlags |= ExecuteOutputFlags.DataTable;
+                c.ExecuteOutputFlags |= ExecuteOutputFlags.DataTable;
 
-            return r;
+            return c;
         }
     }
 }

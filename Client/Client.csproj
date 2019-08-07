@@ -64,9 +64,8 @@
     <Compile Include="CredentialFile.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="ExecuteOutputFlags.cs" />
-    <Compile Include="ExecuteResponse.cs" />
+    <Compile Include="PowerQueryResponse.cs" />
     <Compile Include="IPowerQueryService.cs" />
-    <Compile Include="ExecuteRequest.cs" />
     <Compile Include="Queries.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="ObjectExtension.cs" />

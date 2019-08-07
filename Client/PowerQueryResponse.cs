@@ -11,7 +11,7 @@ namespace PowerQueryNet.Client
     /// <summary>
     /// Response from the PowerQueryCommand.Execute method.
     /// </summary>
-    public class ExecuteResponse
+    public class PowerQueryResponse
     {
 
         /// <summary>
@@ -66,19 +66,19 @@ namespace PowerQueryNet.Client
                 StringReader sr = new StringReader(DataTableXML);
                 dataTable.ReadXml(sr);
 
-                if (executeOutputFlags == ExecuteOutputFlags.DataTable)
+                if (executeOutputFlags.HasFlag(ExecuteOutputFlags.DataTable))
                     DataTable = dataTable;
 
-                if (executeOutputFlags == ExecuteOutputFlags.Csv)
+                if (executeOutputFlags.HasFlag(ExecuteOutputFlags.Csv))
                     Csv = dataTable.ToDelimitedFile(',', true);
 
-                if (executeOutputFlags == ExecuteOutputFlags.Html)
+                if (executeOutputFlags.HasFlag(ExecuteOutputFlags.Html))
                     Html = dataTable.ToHTML();
 
-                if (executeOutputFlags == ExecuteOutputFlags.Json)
+                if (executeOutputFlags.HasFlag(ExecuteOutputFlags.Json))
                     Json = dataTable.ToContentJSON();
 
-                if (executeOutputFlags == ExecuteOutputFlags.Xml)
+                if (executeOutputFlags.HasFlag(ExecuteOutputFlags.Xml))
                     Xml = dataTable.ToContentXML();
             }
         }
