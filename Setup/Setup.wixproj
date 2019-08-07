@@ -34,6 +34,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config.wxi" />
+    <Content Include="Resources\PQNet.ico" />
+    <Content Include="Resources\PQNetBanner.jpg" />
+    <Content Include="Resources\PQNetDialog.jpg" />
     <Content Include="Resources\WiXNewFolderBtn.ico" />
     <Content Include="Resources\WiXUpFolderBtn.ico" />
   </ItemGroup>
