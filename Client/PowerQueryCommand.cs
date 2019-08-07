@@ -84,6 +84,15 @@ namespace PowerQueryNet.Client
         /// <returns></returns>
         public ExecuteResponse Execute(ExecuteRequest executeRequest)
         {
+            if (executeRequest.Credentials == null || executeRequest.Credentials.Count == 0)
+                executeRequest.Credentials = this.Credentials;
+
+            if (executeRequest.Mashup == null)
+                executeRequest.Mashup = this.Mashup;
+
+            if (executeRequest.Queries == null || executeRequest.Queries.Count == 0)
+                executeRequest.Queries = this.Queries;
+
             return ExecuteMethod("Execute", executeRequest);
         }
 
@@ -94,7 +103,7 @@ namespace PowerQueryNet.Client
         /// <returns></returns>
         public ExecuteResponse Execute(string queryName)
         {
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
         }
 
         /// <summary>
@@ -107,7 +116,7 @@ namespace PowerQueryNet.Client
             if (Queries[query.Name] == null)
                 Queries.Add(query);
 
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = query.Name, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = query.Name, Queries = this.Queries, Credentials = this.Credentials, Mashup = this.Mashup, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
         }
 
         /// <summary>
@@ -120,7 +129,7 @@ namespace PowerQueryNet.Client
         public static ExecuteResponse Execute(string queryName, Queries queries, Credentials credentials = null)
         {
             //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = queries, Credentials = credentials });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Queries = queries, Credentials = credentials, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
         }
 
         /// <summary>
@@ -133,7 +142,7 @@ namespace PowerQueryNet.Client
         public static ExecuteResponse Execute(string queryName, string mashup, Credentials credentials = null)
         {
             //return ExecuteMethod("Execute", queryName, queries.ToArray(), credentials);
-            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Mashup = mashup, Credentials = credentials });
+            return ExecuteMethod("Execute", new ExecuteRequest { QueryName = queryName, Mashup = mashup, Credentials = credentials, ExecuteOutputFlags = ExecuteOutputFlags.DataTable });
         }
 
         /// <summary>
