@@ -97,7 +97,7 @@ namespace PowerQuery.Samples
             DisplayResult(result);
         }
 
-        private void DisplayResult(ExecuteResponse result)
+        private void DisplayResult(PowerQueryResponse result)
         {
             if (result == null)
             {
