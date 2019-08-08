@@ -5,7 +5,7 @@
     <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="200" Platform ="x64" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />
     <Icon Id="PQNet.ico" SourceFile="Resources\PQNet.ico" />
     <Property Id="ARPPRODUCTICON" Value="PQNet.ico" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/gsimardnet/PowerQueryNet" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
     <Condition Message="You need to be an administrator to install this product.">

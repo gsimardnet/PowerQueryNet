@@ -78,6 +78,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="MyFiles\MyReport.pbix" />
     <None Include="MyQueries\#Hello World.pq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -88,6 +89,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="MyQueries\fnDateTable.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MyQueries\ListFiles.pq">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MyQueries\TestXml.pq">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
@@ -107,6 +114,9 @@
   <ItemGroup>
     <Content Include="lib\Microsoft.WindowsAPICodePack.dll" />
     <Content Include="lib\Microsoft.WindowsAPICodePack.Shell.dll" />
+    <Content Include="MyFiles\taPMTransactionInsert.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="MyQueries\#credentials.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

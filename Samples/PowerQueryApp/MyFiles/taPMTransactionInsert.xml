@@ -1,0 +1,39 @@
+<eConnect xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <PMTransactionType>
+    <taPMDistribution_Items>
+      <taPMDistribution>
+        <DOCTYPE>1</DOCTYPE>
+        <VCHRNMBR>00000000000000460</VCHRNMBR>
+        <VENDORID>ACETRAVE0001</VENDORID>
+        <DSTSQNUM>1</DSTSQNUM>
+        <DISTTYPE>6</DISTTYPE>
+        <ACTNUMST>400-6520-00</ACTNUMST>
+        <DEBITAMT>85.56</DEBITAMT>
+      </taPMDistribution>
+      <taPMDistribution>
+        <DOCTYPE>1</DOCTYPE>
+        <VCHRNMBR>00000000000000460</VCHRNMBR>
+        <VENDORID>ACETRAVE0001</VENDORID>
+        <DSTSQNUM>2</DSTSQNUM>
+        <DISTTYPE>2</DISTTYPE>
+        <DistRef>Payable Amount</DistRef>
+        <ACTNUMST>000-2100-00</ACTNUMST>
+        <CRDTAMNT>85.56</CRDTAMNT>
+      </taPMDistribution>
+    </taPMDistribution_Items>
+    <taPMTransactionInsert>
+      <BACHNUMB>TEST</BACHNUMB>
+      <VCHNUMWK>00000000000000460</VCHNUMWK>
+      <VENDORID>ACETRAVE0001</VENDORID>
+      <DOCNUMBR>72230</DOCNUMBR>
+      <DOCTYPE>1</DOCTYPE>
+      <DOCAMNT>85.56</DOCAMNT>
+      <DOCDATE>2017-02-06</DOCDATE>
+      <PRCHAMNT>85.56</PRCHAMNT>
+      <CHRGAMNT>85.56</CHRGAMNT>
+      <PORDNMBR>10195</PORDNMBR>
+      <CREATEDIST>0</CREATEDIST>
+    </taPMTransactionInsert>
+  </PMTransactionType>
+</eConnect>
