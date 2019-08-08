@@ -14,7 +14,28 @@ Dependency: [PowerQuerySdk.vsix 1.0.0.16](http://dakahn.gallery.vsassets.io/_api
 
 Samples: [PowerQueryNet.Samples.zip](../../releases/download/v1.0.3/PowerQueryNet.Samples.zip)
 
-## Hello, World! - Command line interface
+## PQNet 
+
+PQNet is a Command Line Interface (CLI) that comes with the installation of PowerQueryNet.
+
+### Features
+
+Export the result of a query to several formats (CSV, JSON, HTML, XML)
+```txt
+pqnet "#Hello World.pq" -o json
+```
+
+Export the result of a query to a SQL Server database
+```txt
+pqnet "#Hello World.pq" -s "Data Source=.\SQL2016;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI" -t "dbo.HelloWorld"
+```
+
+Output the result of a Power BI query to file
+```txt
+pqnet MyReport.pbix Query1 -o csv -f result.csv
+```
+
+## Hello, World! - PQNet (CLI)
 
 1. Create a new file with the following content:
 ```txt
