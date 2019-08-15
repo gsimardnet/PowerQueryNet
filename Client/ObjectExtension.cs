@@ -39,22 +39,23 @@ namespace PowerQueryNet.Client
         /// <returns></returns>
         public static string ToHTML(this DataTable dataTable)
         {
-            string columnHeaders = "";
+            StringBuilder columnHeaders = new StringBuilder();
+
             foreach (DataColumn dc in dataTable.Columns)
             {
-                columnHeaders += $"\n                        <th>{dc.ColumnName}</th>";
+                columnHeaders.Append($"\n                        <th>{dc.ColumnName}</th>");
             }
 
-            string rows = "";
+            StringBuilder rows = new StringBuilder();
             foreach (DataRow dr in dataTable.Rows)
             {
-                string row = "";
+                StringBuilder row = new StringBuilder();
                 foreach (var i in dr.ItemArray)
                 {
-                    row += $"\n                        <td>{HttpUtility.HtmlEncode(i.ToString())}</td>";
+                    row.Append($"\n                        <td>{HttpUtility.HtmlEncode(i.ToString())}</td>");
                 }
-                row = $"\n                    <tr>{row}</tr>";
-                rows += row;
+                row.Append($"\n                    <tr>{row}</tr>");
+                rows.Append(row);
             }
 
             string html = $@"
@@ -109,6 +110,7 @@ namespace PowerQueryNet.Client
                 }
                 rows.Add(row);
             }
+            javaScriptSerializer.MaxJsonLength = int.MaxValue;
             return javaScriptSerializer.Serialize(rows);
         }
 
@@ -134,37 +136,34 @@ namespace PowerQueryNet.Client
         /// <returns></returns>
         public static string ToDelimitedFile(this DataTable dataTable, char delimiter, bool inQuote)
         {
-            string content = "";
+            StringBuilder content = new StringBuilder();
+
             string lastColumn = dataTable.Columns[dataTable.Columns.Count - 1].ColumnName;
             foreach (DataColumn dc in dataTable.Columns)
             {
-                content += dc.ColumnName;
+                content.Append(dc.ColumnName);
                 if (dc.ColumnName != lastColumn)
-                    content += delimiter;
+                    content.Append(delimiter);
             }
 
+            int i = 0;
             foreach (DataRow dr in dataTable.Rows)
             {
-                content += Environment.NewLine;
+                content.Append(Environment.NewLine);
 
                 foreach (DataColumn dc in dataTable.Columns)
                 {
                     if (inQuote)
-                        content += '"' + dr[dc.ColumnName].ToString() + '"';
+                        content.Append('"' + dr[dc.ColumnName].ToString() + '"');
                     else
-                        content += dr[dc.ColumnName].ToString();
-
-                    //if (inQuote)                        
-                    //    content += '"' + dr.Field<string>(dc.ColumnName) + '"';
-                    //else
-                    //    content += dr.Field<string>(dc.ColumnName);
+                        content.Append(dr[dc.ColumnName].ToString());
 
                     if (dc.ColumnName != lastColumn)
-                        content += delimiter;
+                        content.Append(delimiter);
                 }
             }
 
-            return content;
+            return content.ToString();
         }
 
         /// <summary>

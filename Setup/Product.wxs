@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
   <?include $(sys.CURRENTDIR)\Config.wxi?>  
-  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.1.0" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
+  <Product Id="95f93336-b7a9-4a68-acf5-1492ec0c5d72" Name="PowerQueryNet" Language="1033" Version="1.1.1" Manufacturer="Guillaume Simard" UpgradeCode="115ef465-536f-4030-bd2d-44b0edb1bbe5">
     <Package Id="5e1dc07c-131a-43d4-8a98-4d091537ac0f" InstallPrivileges="elevated" InstallerVersion="200" Platform ="x64" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Description="[ProductName]" />
     <Icon Id="PQNet.ico" SourceFile="Resources\PQNet.ico" />
     <Property Id="ARPPRODUCTICON" Value="PQNet.ico" />
