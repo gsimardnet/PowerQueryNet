@@ -6,13 +6,13 @@ PowerQueryNet allows you to run M formulas commonly used in Power BI and Excel (
 
 ## Download
 
-Installer: [PowerQueryNet.msi](../../releases/latest/download/PowerQueryNet.msi)
+Installer: [PowerQueryNet.msi](https://github.com/gsimardnet/PowerQueryNet/releases/latest/download/PowerQueryNet.msi)
 
 Dependency: [PowerQuerySdk.vsix 1.0.0.16](http://dakahn.gallery.vsassets.io/_apis/public/gallery/publisher/dakahn/extension/powerquerysdk/1.0.0.16/assetbyname/PowerQuerySdk.vsix) 
 
 (Upon installation `PowerQuerySdk.vsix` must be in the same folder as `PowerQueryNet.msi`)
 
-Samples: [PowerQueryNet.Samples.zip](../../releases/download/v1.0.3/PowerQueryNet.Samples.zip)
+Samples: [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.3/PowerQueryNet.Samples.zip)
 
 ## PQNet 
 
