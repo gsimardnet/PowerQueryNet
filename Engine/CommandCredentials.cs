@@ -38,29 +38,31 @@ namespace PowerQueryNet.Engine
             return;
         }
 
-        public void SetCredentialWeb(string url)
+        public void SetCredentialWeb(string url, string userName, string password)
         {
             DataSource dataSource = new DataSource("Web", url);
-            DataSourceSetting dataSourceSetting = new DataSourceSetting("Anonymous");
+            DataSourceSetting dataSourceSetting;
+            if (userName == null)
+                dataSourceSetting = new DataSourceSetting("Anonymous");
+            else
+                dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
 
             CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
-            
+
+
             return;
         }
 
         public void SetCredentialSQL(string sql, string userName, string password)
         {
             DataSource dataSource = new DataSource("SQL", sql);
+            DataSourceSetting dataSourceSetting;
             if (userName == null)
-            {
-                DataSourceSetting dataSourceSetting = new DataSourceSetting("Windows");
-                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
-            }
+                dataSourceSetting = new DataSourceSetting("Windows");
             else
-            {
-                var dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
-                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
-            }
+                dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
+
+            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
 
             return;
         }
@@ -68,16 +70,14 @@ namespace PowerQueryNet.Engine
         public void SetCredentialOData(string url, string userName, string password)
         {
             DataSource dataSource = new DataSource("OData", url);
+            DataSourceSetting dataSourceSetting;
             if (userName == null)
-            {
-                DataSourceSetting dataSourceSetting = new DataSourceSetting("Anonymous");
-                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
-            }
+                dataSourceSetting = new DataSourceSetting("Anonymous");
             else
-            {
-                var dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
-                CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
-            }
+                dataSourceSetting = DataSourceSetting.CreateUsernamePasswordCredential(userName, password);
+
+            CredentialStore.SetCredential(dataSource, dataSourceSetting, null);
+
 
             return;
         }

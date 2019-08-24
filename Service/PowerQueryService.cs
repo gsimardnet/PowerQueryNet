@@ -23,10 +23,22 @@ namespace PowerQueryNet.Service
         {
             try
             {
-                string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()) + ".pbix";
-                File.Copy(fileName, tempFile);
-                string mashup = Command.MashupFromFile(tempFile);
-                File.Delete(tempFile);
+                string mashup = null;
+
+                try
+                {
+                    mashup = Command.MashupFromFile(fileName);
+                }
+                catch (Exception)
+                {
+                    string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()) + Path.GetExtension(fileName);
+                    File.Copy(fileName, tempFile);
+
+                    mashup = Command.MashupFromFile(tempFile);
+
+                    File.Delete(tempFile);
+                }
+
                 return mashup;
             }
             catch (Exception ex)
@@ -189,11 +201,11 @@ namespace PowerQueryNet.Service
                         else if(credential is CredentialFolder credentialFolder)
                             commandCredentials.SetCredentialFolder(credentialFolder.Path);
                         else if (credential is CredentialWeb credentialWeb)
-                            commandCredentials.SetCredentialWeb(credentialWeb.Url);
+                            commandCredentials.SetCredentialWeb(credentialWeb.Url, credentialWeb.Username, credentialWeb.Password);
                         else if (credential is CredentialSQL credentialSQL)
                             commandCredentials.SetCredentialSQL(credentialSQL.SQL, credentialSQL.Username, credentialSQL.Password);
                         else if (credential is CredentialOData credentialOData)
-                            commandCredentials.SetCredentialOData(((CredentialOData)credential).Url, credentialOData.Username, credentialOData.Password);
+                            commandCredentials.SetCredentialOData(credentialOData.Url, credentialOData.Username, credentialOData.Password);
                         else
                             throw new NotImplementedException("This Credential kind is not supported for now.");
                     }

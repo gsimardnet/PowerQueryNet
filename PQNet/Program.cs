@@ -58,7 +58,6 @@ namespace PowerQueryNet.PQNet
                     if (!string.IsNullOrWhiteSpace(a.OutputFile))
                         File.WriteAllText(a.OutputFile, "");
 
-                    //ExecuteRequest request = LoadRequest(a);
                     PowerQueryCommand powerQueryCommand = LoadCommand(a);
 
                     PowerQueryResponse powerQueryResponse = powerQueryService.Execute(powerQueryCommand);
@@ -122,8 +121,6 @@ namespace PowerQueryNet.PQNet
                     case ExecuteOutputFlags.Csv:
                         c.CsvFileName = a.OutputFile;
                         break;
-                    //case ExecuteOutputFlags.DataTable:
-                    //    break;
                     case ExecuteOutputFlags.Html:
                         c.HtmlFileName = a.OutputFile;
                         break;
