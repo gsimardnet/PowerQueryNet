@@ -12,7 +12,7 @@ Dependency: [PowerQuerySdk.vsix 1.0.0.16](http://dakahn.gallery.vsassets.io/_api
 
 (Upon installation `PowerQuerySdk.vsix` must be in the same folder as `PowerQueryNet.msi`)
 
-Samples: [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.0.3/PowerQueryNet.Samples.zip)
+Samples: [PowerQueryNet.Samples.zip](https://github.com/gsimardnet/PowerQueryNet/releases/download/v1.1.2/PowerQueryNet.Samples.zip)
 
 ## PQNet 
 
